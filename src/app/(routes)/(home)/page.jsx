@@ -24,10 +24,39 @@ import {
     CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import { auctionStats } from "@/constants";
 import { cn } from "@/lib/utils";
+import { useStats } from "@/hooks/useStats";
 
-function page() {
+export default function HomePage() {
+    const { data: stats } = useStats();
+
+    const auctionStats = [
+        {
+            borderColor: "border-blue-500",
+            title: "Total Auctions",
+            description: "All auctions in the system",
+            count: stats?.data?.auctionStats || 0,
+        },
+        {
+            borderColor: "border-orange-500",
+            title: "Active Auctions",
+            description: "Currently active auctions",
+            count: stats?.data?.totalOngoingAuctions || 0,
+        },
+        {
+            borderColor: "border-yellow-500",
+            title: "Upcoming Auctions",
+            description: "Scheduled for future dates",
+            count: stats?.data?.totalUpcomingAuctions || 0,
+        },
+        {
+            borderColor: "border-green-500",
+            title: "Completed Auctions",
+            description: "Finished auctions",
+            count: stats?.data?.totalCompletedAuctions || 0,
+        },
+    ];
+
     return (
         <section className="flex flex-col gap-6">
             <Carousel
@@ -78,7 +107,7 @@ function page() {
                                             size="h3"
                                             className={"font-bold"}
                                         >
-                                            {data.count}
+                                            {data.count ? data.count : 0}
                                         </Heading>
                                     </CardContent>
                                 </Card>
@@ -87,8 +116,6 @@ function page() {
                     ))}
                 </CarouselContent>
             </Carousel>
-
-            <div className="hidden gap-4 md:grid md:grid-cols-2 xl:grid-cols-4"></div>
 
             <Dialog>
                 <DialogTrigger asChild>
@@ -108,5 +135,3 @@ function page() {
         </section>
     );
 }
-
-export default page;
