@@ -4,14 +4,23 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "bunx prisma generate && bun lint && bun format &&  next build",
+        "build": "bunx prisma generate && bun lint && next build",
         "start": "next start",
-        "lint": "eslint",
+        "lint": "eslint .",
         "check-format": "prettier --check .",
         "format": "prettier --write .",
-        "prepare": "husky",
+        "prepare": "husky install",
         "db:dev": "dotenv -e .env.development -- bunx prisma db push",
         "db:prod": "dotenv -e .env -- bunx prisma db push"
+    },
+    "lint-staged": {
+        "*.{js,jsx,ts,tsx}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md,css}": [
+            "prettier --write"
+        ]
     },
     "prisma": {
         "seed": "bun prisma/seed.js"

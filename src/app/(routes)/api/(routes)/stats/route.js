@@ -1,4 +1,3 @@
-import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET(req, res) {
@@ -8,8 +7,6 @@ export async function GET(req, res) {
         if (!hasPermission(user.role, "read")) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
-
-        // const auctions =
 
         return NextResponse.json({}, { status: 200 });
     } catch (error) {
