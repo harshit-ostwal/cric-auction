@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Heading } from "@/components/ui/headings";
 import { Icons } from "@/shared/icons";
-import React from "react";
+import React, { useMemo } from "react";
 import {
     Carousel,
     CarouselContent,
@@ -26,94 +26,138 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 import { useStats } from "@/hooks/useStats";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function HomePage() {
-    const { data: stats } = useStats();
+const SkeletonCard = React.memo(() => (
+    <Card className="w-auto border-t-4 border-gray-200">
+        <CardHeader className={"flex flex-col gap-2"}>
+            <CardTitle>
+                <Skeleton className="h-6 w-32" />
+            </CardTitle>
+            <CardDescription>
+                <Skeleton className="h-4 w-40" />
+            </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Skeleton className="h-12 w-16" />
+        </CardContent>
+    </Card>
+));
+SkeletonCard.displayName = "SkeletonCard";
 
-    const auctionStats = [
-        {
-            borderColor: "border-blue-500",
-            title: "Total Auctions",
-            description: "All auctions in the system",
-            count: stats?.data?.auctionStats || 0,
-        },
-        {
-            borderColor: "border-orange-500",
-            title: "Active Auctions",
-            description: "Currently active auctions",
-            count: stats?.data?.totalOngoingAuctions || 0,
-        },
-        {
-            borderColor: "border-yellow-500",
-            title: "Upcoming Auctions",
-            description: "Scheduled for future dates",
-            count: stats?.data?.totalUpcomingAuctions || 0,
-        },
-        {
-            borderColor: "border-green-500",
-            title: "Completed Auctions",
-            description: "Finished auctions",
-            count: stats?.data?.totalCompletedAuctions || 0,
-        },
-    ];
+const StatCard = React.memo(({ data, index }) => (
+    <div
+        key={index}
+        className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/4"
+    >
+        <CarouselItem>
+            <Card className={cn(data.borderColor, "w-auto border-t-4")}>
+                <CardHeader>
+                    <CardTitle>
+                        <Heading size="h6" className="font-semibold">
+                            {data.title}
+                        </Heading>
+                    </CardTitle>
+                    <CardDescription>
+                        <Heading size="p" className="font-medium">
+                            {data.description}
+                        </Heading>
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Heading size="h3" className={"font-bold"}>
+                        {data.count || 0}
+                    </Heading>
+                </CardContent>
+            </Card>
+        </CarouselItem>
+    </div>
+));
+StatCard.displayName = "StatCard";
+
+const HomePage = React.memo(() => {
+    const { data: stats, isLoading } = useStats();
+
+    const auctionStats = useMemo(
+        () => [
+            {
+                borderColor: "border-blue-500",
+                title: "Total Auctions",
+                description: "All auctions in the system",
+                count: stats?.data?.auctionStats || 0,
+            },
+            {
+                borderColor: "border-orange-500",
+                title: "Active Auctions",
+                description: "Currently active auctions",
+                count: stats?.data?.totalOngoingAuctions || 0,
+            },
+            {
+                borderColor: "border-yellow-500",
+                title: "Upcoming Auctions",
+                description: "Scheduled for future dates",
+                count: stats?.data?.totalUpcomingAuctions || 0,
+            },
+            {
+                borderColor: "border-green-500",
+                title: "Completed Auctions",
+                description: "Finished auctions",
+                count: stats?.data?.totalCompletedAuctions || 0,
+            },
+        ],
+        [stats?.data]
+    );
+
+    const carouselOptions = useMemo(
+        () => ({
+            align: "start",
+            duration: 60,
+            dragFree: true,
+        }),
+        []
+    );
+
+    const carouselPlugins = useMemo(
+        () => [
+            Autoplay({
+                delay: 3000,
+                stopOnInteraction: false,
+                stopOnMouseEnter: false,
+                stopOnLastSnap: false,
+                stopOnFocusIn: false,
+            }),
+        ],
+        []
+    );
+
+    const skeletonItems = useMemo(
+        () =>
+            Array.from({ length: 4 }).map((_, index) => (
+                <div
+                    key={`skeleton-${index}`}
+                    className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/4"
+                >
+                    <CarouselItem>
+                        <SkeletonCard />
+                    </CarouselItem>
+                </div>
+            )),
+        []
+    );
+
+    const statItems = useMemo(
+        () =>
+            auctionStats.map((data, index) => (
+                <StatCard key={`stat-${index}`} data={data} index={index} />
+            )),
+        [auctionStats]
+    );
 
     return (
         <section className="flex flex-col gap-6">
-            <Carousel
-                opts={{ align: "start", duration: 60, dragFree: true }}
-                plugins={[
-                    Autoplay({
-                        delay: 3000,
-                        stopOnInteraction: false,
-                        stopOnMouseEnter: false,
-                        stopOnLastSnap: false,
-                        stopOnFocusIn: false,
-                    }),
-                ]}
-            >
+            <Carousel opts={carouselOptions} plugins={carouselPlugins}>
                 <CarouselContent>
-                    {auctionStats.map((data, index) => (
-                        <div
-                            key={index}
-                            className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/4"
-                        >
-                            <CarouselItem key={index}>
-                                <Card
-                                    className={cn(
-                                        data.borderColor,
-                                        "w-auto border-t-4"
-                                    )}
-                                >
-                                    <CardHeader>
-                                        <CardTitle>
-                                            <Heading
-                                                size="h6"
-                                                className="font-semibold"
-                                            >
-                                                {data.title}
-                                            </Heading>
-                                        </CardTitle>
-                                        <CardDescription>
-                                            <Heading
-                                                size="p"
-                                                className="font-medium"
-                                            >
-                                                {data.description}
-                                            </Heading>
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Heading
-                                            size="h3"
-                                            className={"font-bold"}
-                                        >
-                                            {data.count ? data.count : 0}
-                                        </Heading>
-                                    </CardContent>
-                                </Card>
-                            </CarouselItem>
-                        </div>
-                    ))}
+                    {isLoading ? skeletonItems : statItems}
                 </CarouselContent>
             </Carousel>
 
@@ -134,4 +178,8 @@ export default function HomePage() {
             </Dialog>
         </section>
     );
-}
+});
+
+HomePage.displayName = "HomePage";
+
+export default HomePage;
