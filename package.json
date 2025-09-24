@@ -22,9 +22,6 @@
             "prettier --write"
         ]
     },
-    "prisma": {
-        "seed": "bun prisma/seed.js"
-    },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
         "@next/third-parties": "^15.5.4",
