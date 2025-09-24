@@ -1,0 +1,38 @@
+name: PR Check
+
+on:
+    pull_request:
+        branches:
+            - development
+            - testing
+            - production
+
+jobs:
+    lint-and-build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Enable Corepack & Install
+              run: |
+                  corepack enable
+                  pnpm install
+
+            - name: Lint
+              run: pnpm lint
+
+            - name: Format Check
+              run: pnpm format-check
+
+            - name: Format
+              run: pnpm format
+
+            - name: Build
+              run: pnpm build
