@@ -1,18 +1,12 @@
+import prisma from "@/lib/prisma";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = NextAuth({
+export const authOptions = {
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: {
-                params: {
-                    prompt: "consent",
-                    access_type: "offline",
-                    response_type: "code",
-                },
-            },
         }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
@@ -26,19 +20,55 @@ export const authOptions = NextAuth({
     },
 
     callbacks: {
-        async jwt({ token, account, profile }) {
-            if (account && profile) {
-                token.picture = profile.picture;
+        async signIn({ account, profile }) {
+            try {
+                if (account.provider === "google") {
+                    if (!profile.email_verified) return false;
+
+                    await prisma.user.upsert({
+                        where: { email: profile.email },
+                        update: {
+                            fullName: profile.name,
+                            image: profile.picture,
+                        },
+                        create: {
+                            email: profile.email,
+                            fullName: profile.name,
+                            role: "USER",
+                            image: profile.picture,
+                        },
+                    });
+                }
+                return true;
+            } catch {
+                return false;
+            }
+        },
+
+        async jwt({ token, user }) {
+            if (user?.email) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { email: user.email },
+                });
+                if (dbUser) {
+                    token.id = dbUser.id;
+                    token.image = dbUser.image;
+                }
             }
             return token;
         },
+
         async session({ session, token }) {
-            if (token.picture) {
-                session.user.image = token.picture;
+            if (token?.id) {
+                session.user.id = token.id;
+            }
+            if (token?.image) {
+                session.user.image = token.image;
             }
             return session;
         },
     },
-});
+};
 
-export { authOptions as GET, authOptions as POST };
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };

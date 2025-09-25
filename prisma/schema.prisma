@@ -12,6 +12,7 @@ model User {
   id       String    @id @default(auto()) @map("_id") @db.ObjectId
   fullName String
   email    String    @unique
+  image    String?
   role     Role      @default(USER)
   auctions Auction[]
 
@@ -21,12 +22,15 @@ model User {
 
 model Auction {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  auctionLogo   String?
   auctionName   String
   auctionDate   DateTime
-  auctionTime   DateTime
-  teamPoints    Float
-  minimumBid    Float
+  auctionTime   String
+  teamPoints    Int
+  minimumBid    Int
+  bidIncreaseBy Int
   playerPerTeam Int
+  venue         String
   status        AuctionStatus @default(UPCOMING)
 
   createdAt DateTime @default(now())

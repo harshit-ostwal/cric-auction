@@ -62,17 +62,25 @@ function FormItem({ className, ...props }) {
     );
 }
 
-function FormLabel({ className, ...props }) {
+function FormLabel({ className, desctructive = false, ...props }) {
     const { error, formItemId } = useFormField();
 
     return (
-        <Label
-            data-slot="form-label"
-            data-error={!!error}
-            className={cn("data-[error=true]:text-destructive", className)}
-            htmlFor={formItemId}
-            {...props}
-        />
+        <div className="flex items-center gap-2">
+            <Label
+                data-slot="form-label"
+                data-error={!!error}
+                className={cn(
+                    "data-[error=true]:text-destructive text-base",
+                    className
+                )}
+                htmlFor={formItemId}
+                {...props}
+            />
+            {desctructive && (
+                <div className="text-destructive text-sm leading-none">*</div>
+            )}
+        </div>
     );
 }
 

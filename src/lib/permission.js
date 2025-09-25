@@ -1,5 +1,5 @@
 export const roles = {
-    admin: ["read", "create", "update", "delete"],
-    member: ["read", "create", "update"],
-    user: ["read"],
+    ADMIN: ["read", "create", "update", "delete"],
+    BIDDER: ["read", "create", "update"],
+    USER: ["read"],
 };

@@ -12,6 +12,9 @@ import { Heading } from "./ui/headings";
 import { Skeleton } from "./ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { signOut, useSession } from "next-auth/react";
+import { Icons } from "@/shared/icons";
+import Link from "next/link";
+import { SiteLinks } from "@/constants";
 
 const UserAvatar = memo(function UserAvatar({ session }) {
     return (
@@ -35,56 +38,76 @@ function Navbar() {
 
     return (
         <nav className="flex items-center justify-between gap-8">
-            <Heading size="h4" className="font-bold">
-                CricAuction
-            </Heading>
+            <Link href={"/"}>
+                <Heading size="h4" className="font-bold">
+                    <Icons.gavel size={32} />
+                    CricAuction
+                </Heading>
+            </Link>
 
-            <DropdownMenu>
-                <DropdownMenuTrigger>
-                    {status === "loading" ? (
-                        <Skeleton className="h-10 w-10 rounded-full lg:h-12 lg:w-12" />
-                    ) : session ? (
-                        <UserAvatar session={session} />
-                    ) : (
-                        <Skeleton className="h-10 w-10 rounded-full lg:h-12 lg:w-12" />
+            <div className="flex items-center gap-10">
+                <div className="hidden gap-10 md:flex">
+                    {SiteLinks.map((link, idx) => (
+                        <Link
+                            key={idx}
+                            href={link.href}
+                            className="text-muted-foreground hover:text-foreground font-semibold duration-300"
+                        >
+                            <Heading size="p">{link.name}</Heading>
+                        </Link>
+                    ))}
+                </div>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        {status === "loading" ? (
+                            <Skeleton className="h-10 w-10 rounded-full lg:h-12 lg:w-12" />
+                        ) : session ? (
+                            <UserAvatar session={session} />
+                        ) : (
+                            <Skeleton className="h-10 w-10 rounded-full lg:h-12 lg:w-12" />
+                        )}
+                    </DropdownMenuTrigger>
+
+                    {session && (
+                        <DropdownMenuContent
+                            align="end"
+                            className="flex w-64 flex-col gap-2 p-4"
+                        >
+                            <div className="flex flex-col">
+                                <Heading
+                                    size="p"
+                                    className="line-clamp-1 font-semibold text-ellipsis"
+                                >
+                                    {session.user?.name ?? "User"}, 👋
+                                </Heading>
+                                <Heading
+                                    size="span"
+                                    className="text-muted-foreground line-clamp-1 text-ellipsis"
+                                >
+                                    {session.user?.email}
+                                </Heading>
+                            </div>
+
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem variant="ghost" asChild>
+                                    <Link href={"/profile"}>Profile</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onClick={() =>
+                                        signOut({ callbackUrl: "/login" })
+                                    }
+                                >
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
                     )}
-                </DropdownMenuTrigger>
-
-                {session && (
-                    <DropdownMenuContent
-                        align="end"
-                        className="flex w-64 flex-col gap-2 p-4"
-                    >
-                        <div className="flex flex-col">
-                            <Heading
-                                size="p"
-                                className="line-clamp-1 font-semibold text-ellipsis"
-                            >
-                                {session.user?.name ?? "User"}, 👋
-                            </Heading>
-                            <Heading
-                                size="span"
-                                className="text-muted-foreground line-clamp-1 text-ellipsis"
-                            >
-                                {session.user?.email}
-                            </Heading>
-                        </div>
-
-                        <DropdownMenuSeparator />
-
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem
-                                variant="destructive"
-                                onClick={() =>
-                                    signOut({ callbackUrl: "/login" })
-                                }
-                            >
-                                Logout
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                )}
-            </DropdownMenu>
+                </DropdownMenu>
+            </div>
         </nav>
     );
 }

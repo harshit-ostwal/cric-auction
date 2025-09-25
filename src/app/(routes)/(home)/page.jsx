@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -7,17 +6,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 import { Heading } from "@/components/ui/headings";
 import { Icons } from "@/shared/icons";
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import {
     Carousel,
     CarouselContent,
@@ -25,10 +16,13 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
-import { useStats } from "@/hooks/useStats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuctions } from "@/hooks/useAuction";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { AuctionCard, AuctionSkeletonCard } from "@/components/AuctionCard";
 
-const SkeletonCard = React.memo(() => (
+const SkeletonCard = memo(() => (
     <Card className="w-auto border-t-4 border-gray-200">
         <CardHeader className={"flex flex-col gap-2"}>
             <CardTitle>
@@ -45,10 +39,10 @@ const SkeletonCard = React.memo(() => (
 ));
 SkeletonCard.displayName = "SkeletonCard";
 
-const StatCard = React.memo(({ data, index }) => (
+const StatCard = memo(({ data, index }) => (
     <div
         key={index}
-        className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/4"
+        className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/3"
     >
         <CarouselItem>
             <Card className={cn(data.borderColor, "w-auto border-t-4")}>
@@ -75,38 +69,8 @@ const StatCard = React.memo(({ data, index }) => (
 ));
 StatCard.displayName = "StatCard";
 
-const HomePage = React.memo(() => {
-    const { data: stats, isLoading } = useStats();
-
-    const auctionStats = useMemo(
-        () => [
-            {
-                borderColor: "border-blue-500",
-                title: "Total Auctions",
-                description: "All auctions in the system",
-                count: stats?.data?.auctionStats || 0,
-            },
-            {
-                borderColor: "border-orange-500",
-                title: "Active Auctions",
-                description: "Currently active auctions",
-                count: stats?.data?.totalOngoingAuctions || 0,
-            },
-            {
-                borderColor: "border-yellow-500",
-                title: "Upcoming Auctions",
-                description: "Scheduled for future dates",
-                count: stats?.data?.totalUpcomingAuctions || 0,
-            },
-            {
-                borderColor: "border-green-500",
-                title: "Completed Auctions",
-                description: "Finished auctions",
-                count: stats?.data?.totalCompletedAuctions || 0,
-            },
-        ],
-        [stats?.data]
-    );
+const HomePage = memo(() => {
+    const { data: auctions } = useAuctions();
 
     const carouselOptions = useMemo(
         () => ({
@@ -130,52 +94,142 @@ const HomePage = React.memo(() => {
         []
     );
 
-    const skeletonItems = useMemo(
-        () =>
-            Array.from({ length: 4 }).map((_, index) => (
+    const auctionItems = useMemo(() => {
+        if (!auctions) {
+            return Array.from({ length: 2 }).map((_, index) => (
                 <div
-                    key={`skeleton-${index}`}
-                    className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/4"
+                    key={`auction-skeleton-${index}`}
+                    className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2"
                 >
                     <CarouselItem>
-                        <SkeletonCard />
+                        <AuctionSkeletonCard />
                     </CarouselItem>
                 </div>
-            )),
-        []
-    );
+            ));
+        }
 
-    const statItems = useMemo(
-        () =>
-            auctionStats.map((data, index) => (
-                <StatCard key={`stat-${index}`} data={data} index={index} />
-            )),
-        [auctionStats]
-    );
+        const todayAuctions = auctions
+            .filter((auction) => {
+                const auctionDate = new Date(auction.auctionDate)
+                    .toISOString()
+                    .split("T")[0];
+                const today = new Date().toISOString().split("T")[0];
+                return auctionDate === today;
+            })
+            .sort((a, b) => {
+                if (a.auctionTime && b.auctionTime) {
+                    const timeA = a.auctionTime
+                        .split(":")
+                        .map((num) => parseInt(num, 10));
+                    const timeB = b.auctionTime
+                        .split(":")
+                        .map((num) => parseInt(num, 10));
+
+                    if (timeA[0] !== timeB[0]) {
+                        return timeA[0] - timeB[0];
+                    }
+                    return timeA[1] - timeB[1];
+                }
+
+                if (a.auctionTime && !b.auctionTime) return -1;
+                if (!a.auctionTime && b.auctionTime) return 1;
+
+                return new Date(a.createdAt) - new Date(b.createdAt);
+            });
+
+        if (todayAuctions.length === 0) {
+            return [
+                <div key="no-auctions" className="w-full">
+                    <CarouselItem>
+                        <Card className="flex h-57.5 items-center justify-center p-8">
+                            <CardContent>
+                                <div className="flex flex-col items-center gap-2">
+                                    <Icons.calendar className="text-muted-foreground size-12" />
+                                    <div className="flex flex-col items-center">
+                                        <Heading
+                                            size="h5"
+                                            className="text-muted-foreground"
+                                        >
+                                            No Auctions Today
+                                        </Heading>
+                                        <Heading
+                                            size="p"
+                                            className="text-muted-foreground"
+                                        >
+                                            There are no Auctions Today at the
+                                            moment
+                                        </Heading>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </CarouselItem>
+                </div>,
+            ];
+        }
+
+        return todayAuctions.map((auction) => (
+            <div
+                key={auction.id}
+                className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2"
+            >
+                <CarouselItem>
+                    <AuctionCard auction={auction} />
+                </CarouselItem>
+            </div>
+        ));
+    }, [auctions]);
 
     return (
         <section className="flex flex-col gap-6">
-            <Carousel opts={carouselOptions} plugins={carouselPlugins}>
-                <CarouselContent>
-                    {isLoading ? skeletonItems : statItems}
-                </CarouselContent>
-            </Carousel>
+            <div className="flex flex-col gap-6">
+                <Heading size="h4" className="font-semibold">
+                    Today&apos;s Auctions
+                </Heading>
 
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button size={"md"} className={"ml-auto w-fit"}>
-                        Create New Auction <Icons.plus />
+                <Carousel opts={carouselOptions} plugins={carouselPlugins}>
+                    <CarouselContent>{auctionItems}</CarouselContent>
+                </Carousel>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+                <Link href={"/auctions/create"}>
+                    <Button
+                        size={"md"}
+                        className={"w-full"}
+                        variant={"cricketRed"}
+                    >
+                        <Icons.gavel /> Create Auction
                     </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Create New Auction</DialogTitle>
-                        <DialogDescription>
-                            Fill in the details below to create a new auction
-                        </DialogDescription>
-                    </DialogHeader>
-                </DialogContent>
-            </Dialog>
+                </Link>
+                <Link href={"/profile"}>
+                    <Button
+                        size={"md"}
+                        className={"w-full"}
+                        variant={"cricketGreen"}
+                    >
+                        <Icons.hammer className="rotate-270" /> My Auctions
+                    </Button>
+                </Link>
+                <Link href={"/auctions"}>
+                    <Button
+                        size={"md"}
+                        className={"w-full"}
+                        variant={"cricketBlue"}
+                    >
+                        <Icons.alertTriangle /> View Auctions
+                    </Button>
+                </Link>
+                <Link href={"/auctions/join"}>
+                    <Button
+                        size={"md"}
+                        className={"w-full"}
+                        variant={"cricketBlue"}
+                    >
+                        <Icons.people /> Join as Player
+                    </Button>
+                </Link>
+            </div>
         </section>
     );
 });

@@ -24,7 +24,11 @@ export const Heading = ({ className, size = "h1", id, children, ...props }) => {
     const Tag = size === "p" ? "p" : size;
     return (
         <Tag
-            className={cn(headingVariants({ size }), className)}
+            className={cn(
+                headingVariants({ size }),
+                className,
+                "inline-flex items-center gap-3"
+            )}
             id={id}
             {...props}
         >

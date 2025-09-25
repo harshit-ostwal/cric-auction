@@ -13,7 +13,20 @@ export async function GET() {
             );
         }
 
-        const auctionStats = await prisma.auction.findMany();
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+        });
+
+        if (!user) {
+            return NextResponse.json(
+                { success: false, message: "User not found" },
+                { status: 404 }
+            );
+        }
+
+        const auctionStats = await prisma.auction.findMany({
+            where: { userId: user.id },
+        });
 
         return NextResponse.json(
             {

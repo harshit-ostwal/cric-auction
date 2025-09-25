@@ -9,7 +9,7 @@ import React, { useEffect, memo, useState } from "react";
 const LoginHeader = memo(() => (
     <div className="flex flex-col">
         <Heading size="h4" className="font-bold">
-            CricAuction
+            <Icons.gavel size={32} /> CricAuction
         </Heading>
         <Heading size="h6" className="text-muted-foreground">
             Welcome back! Please sign in to continue.
