@@ -93,6 +93,13 @@ function Navbar() {
 
                             <DropdownMenuGroup>
                                 <DropdownMenuItem variant="ghost" asChild>
+                                    <Link href={"/auctions"}>Auctions</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem variant="ghost" asChild>
+                                    <Link href={"/profile"}>My Auctions</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem variant="ghost" asChild>
                                     <Link href={"/profile"}>Profile</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem

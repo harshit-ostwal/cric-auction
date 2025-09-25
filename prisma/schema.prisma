@@ -39,12 +39,6 @@ model Auction {
   userId String? @db.ObjectId
 }
 
-enum AuctionStatus {
-  ONGOING
-  UPCOMING
-  COMPLETED
-}
-
 enum Role {
   ADMIN
   BIDDER

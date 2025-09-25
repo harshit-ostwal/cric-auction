@@ -45,10 +45,4 @@ export const createAuctionSchema = z.object({
         .min(3, { error: "Venue must be at least 3 characters" })
         .max(200, { error: "Venue must be at most 200 characters" })
         .trim(),
-
-    status: z
-        .enum(["UPCOMING", "ONGOING", "COMPLETED"], {
-            error: "Auction status is required",
-        })
-        .default("UPCOMING"),
 });

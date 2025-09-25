@@ -41,7 +41,6 @@ function Page() {
             bidIncreaseBy: undefined,
             playerPerTeam: undefined,
             venue: undefined,
-            status: "UPCOMING",
         },
     });
     const router = useRouter();

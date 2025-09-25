@@ -53,7 +53,6 @@ function Page() {
             bidIncreaseBy: undefined,
             playerPerTeam: undefined,
             venue: undefined,
-            status: "UPCOMING",
         },
     });
 
@@ -70,7 +69,6 @@ function Page() {
                 bidIncreaseBy: auctionData.bidIncreaseBy || undefined,
                 playerPerTeam: auctionData.playerPerTeam || undefined,
                 venue: auctionData.venue || undefined,
-                status: auctionData.status || "UPCOMING",
             });
         }
     }, [auctionData, auctionForm]);
