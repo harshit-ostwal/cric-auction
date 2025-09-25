@@ -222,7 +222,7 @@ const Profile = memo(() => {
                 </Heading>
                 {auctions ? (
                     auctions.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                             {auctions.map((auction) => (
                                 <AuctionCard
                                     key={auction.id}
@@ -255,7 +255,7 @@ const Profile = memo(() => {
                         </Card>
                     )
                 ) : (
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         <AuctionSkeletonCard />
                         <AuctionSkeletonCard />
                     </div>
