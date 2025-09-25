@@ -27,13 +27,13 @@ export const createAuctionSchema = z.object({
 
     minimumBid: z.coerce
         .number({ error: "Minimum bid is required" })
-        .min(1000, { error: "Minimum bid must be at least 1,000" })
+        .min(100, { error: "Minimum bid must be at least 1,000" })
         .max(10000000, { error: "Minimum bid cannot exceed 10,000,000" }),
 
     bidIncreaseBy: z.coerce
         .number({ error: "Bid increase amount is required" })
         .min(100, { error: "Bid increase amount must be at least 100" })
-        .max(100000, { error: "Bid increase amount cannot exceed 100,000" }),
+        .max(10000000, { error: "Bid increase amount cannot exceed 100,000" }),
 
     playerPerTeam: z.coerce
         .number({ error: "Players per team is required" })

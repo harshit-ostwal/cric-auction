@@ -8,73 +8,58 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Heading } from "@/components/ui/headings";
 import { Icons } from "@/shared/icons";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns/format";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "./ui/button";
-
-const AUCTION_STATUS_CONFIG = {
-    ONGOING: {
-        cardStyle: "border-green-200 bg-green-50",
-        badgeVariant: "success",
-        avatarStyle: "bg-green-300 text-green-600",
-    },
-    COMPLETED: {
-        cardStyle: "border-blue-200 bg-blue-50",
-        badgeVariant: "info",
-        avatarStyle: "bg-blue-300 text-blue-600",
-    },
-    UPCOMING: {
-        cardStyle: "border-yellow-200 bg-yellow-50",
-        badgeVariant: "warning",
-        avatarStyle: "bg-yellow-300 text-yellow-600",
-    },
-    default: {
-        cardStyle: "border-gray-200 bg-gray-50",
-        badgeVariant: "default",
-        avatarStyle: "bg-gray-300 text-gray-600",
-    },
-};
+import { Button } from "@/components/ui/button";
+import { useDeleteAuction, useUpdateAuction } from "@/hooks/useAuction";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 const AuctionSkeletonCard = memo(() => (
     <Card>
         <CardHeader className="flex flex-col gap-4">
-            <div className="flex w-full items-center justify-between">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <Skeleton className="h-6 w-20" />
+            <div className="flex w-full items-center justify-between gap-4">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-6 w-24" />
             </div>
-            <div className="space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
+
+            <div className="flex w-full items-center gap-4">
+                <Skeleton className="size-24 rounded-2xl" />
+                <div className="flex flex-col space-y-2">
+                    <Skeleton className="h-6 w-40" />
+                    <Skeleton className="h-4 w-32" />
+                </div>
             </div>
         </CardHeader>
-        <CardContent>
-            <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2 text-center">
-                    <Skeleton className="mx-auto h-4 w-16" />
-                    <Skeleton className="mx-auto h-5 w-12" />
-                </div>
-                <div className="space-y-2 text-center">
-                    <Skeleton className="mx-auto h-4 w-16" />
-                    <Skeleton className="mx-auto h-5 w-12" />
-                </div>
-                <div className="space-y-2 text-center">
-                    <Skeleton className="mx-auto h-4 w-20" />
-                    <Skeleton className="mx-auto h-5 w-8" />
-                </div>
+
+        <CardContent className="flex items-center justify-between gap-6">
+            <div className="flex flex-col gap-1">
+                <Skeleton className="h-8 w-32" />
+                <Skeleton className="h-7 w-20" />
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <Skeleton className="h-8 w-36" />
+                <Skeleton className="h-7 w-12" />
             </div>
         </CardContent>
     </Card>
 ));
 AuctionSkeletonCard.displayName = "AuctionSkeletonCard";
 
-const AuctionCard = memo(({ auction }) => {
-    const statusConfig =
-        AUCTION_STATUS_CONFIG[auction.status] || AUCTION_STATUS_CONFIG.default;
-
+const AuctionCard = memo(({ auction, currentUser }) => {
     const formatAuctionDateTime = (date, time) => {
         try {
             const formattedDate = format(new Date(date), "PPP");
@@ -120,11 +105,39 @@ const AuctionCard = memo(({ auction }) => {
         );
     };
 
+    const isOwner = currentUser && auction.userId === currentUser.id;
+
+    const { mutate: deleteAuction } = useDeleteAuction();
+    const router = useRouter();
+
+    const handleEdit = (id) => {
+        router.replace(`/auctions/${id}/edit`);
+    };
+
+    const handleDelete = (id) => {
+        deleteAuction(id);
+    };
+
     return (
-        <Card className={cn(statusConfig.cardStyle)}>
+        <Card className={"bg-radial from-white via-white to-amber-50"}>
             <CardHeader className="flex flex-col gap-4">
-                <div className="flex w-full items-center justify-between">
-                    <Avatar className={"size:16 lg:size-16"}>
+                <div className="flex w-full items-center justify-between gap-4 font-semibold">
+                    <Heading size="p">
+                        <Icons.calendar />
+                        {auction.auctionDate ? formattedDate : "Date not set"}
+                    </Heading>
+                    <Heading size="p">
+                        <Icons.clock />
+                        {auction.auctionTime ? formattedTime : "Time not set"}
+                    </Heading>
+                </div>
+
+                <div className="flex w-full items-center gap-4">
+                    <Avatar
+                        className={
+                            "size-16 rounded-2xl object-cover lg:size-24"
+                        }
+                    >
                         {auction.auctionLogo ? (
                             <AvatarImage
                                 src={auction.auctionLogo}
@@ -132,80 +145,127 @@ const AuctionCard = memo(({ auction }) => {
                             />
                         ) : (
                             <AvatarFallback
-                                className={statusConfig.avatarStyle}
+                                className={"rounded-2xl object-cover"}
                             >
                                 {getAuctionInitials(auction.auctionName)}
                             </AvatarFallback>
                         )}
                     </Avatar>
-                    <Badge
-                        variant={statusConfig.badgeVariant}
-                        className="font-medium"
-                    >
-                        {auction.status || "UPCOMING"}
-                    </Badge>
-                </div>
-
-                <div className="space-y-2">
-                    <CardTitle>
-                        <Heading size="h5" className="font-semibold">
-                            {auction.auctionName}
-                        </Heading>
-                    </CardTitle>
-                    <CardDescription
-                        className={"text-foreground flex flex-col gap-1"}
-                    >
-                        <Heading size="p">
-                            <Icons.calendar />{" "}
-                            {auction.auctionDate
-                                ? formattedDate
-                                : "Date not set"}
-                        </Heading>
-                        <Heading size="p">
-                            <Icons.clock />{" "}
-                            {auction.auctionTime
-                                ? formattedTime
-                                : "Time not set"}
-                        </Heading>
-                    </CardDescription>
+                    <div className="flex flex-col">
+                        <CardTitle>
+                            <Heading
+                                size="h5"
+                                className="line-clamp-1 font-semibold text-ellipsis"
+                            >
+                                {auction.auctionName}
+                            </Heading>
+                        </CardTitle>
+                        <CardDescription
+                            className={"text-foreground flex flex-col gap-1"}
+                        >
+                            <Heading
+                                size="p"
+                                className="text-muted-foreground line-clamp-1 font-semibold text-ellipsis"
+                            >
+                                {auction.venue || "Venue not set"}
+                            </Heading>
+                        </CardDescription>
+                    </div>
                 </div>
             </CardHeader>
 
-            <CardContent className={"flex flex-col gap-6"}>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1">
-                        <Heading size="p" className="text-muted-foreground">
-                            Team Points (Per Team)
-                        </Heading>
-                        <Heading size="p" className="font-semibold">
-                            <Icons.targetArrow className="text-red-600" />
-                            {auction.teamPoints?.toLocaleString() || 0}
-                        </Heading>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <Heading size="p" className="text-muted-foreground">
-                            Min Bid (Per Player)
-                        </Heading>
-                        <Heading size="p" className="font-semibold">
-                            <Icons.target className="text-blue-600" />
-                            {auction.minimumBid?.toLocaleString() || 0}
-                        </Heading>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                        <Heading size="p" className="text-muted-foreground">
-                            Total Players (Per Team)
-                        </Heading>
-                        <Heading size="p" className="font-semibold">
-                            <Icons.target className="text-purple-600" />
-                            {auction.playerPerTeam || 0}
-                        </Heading>
-                    </div>
+            <CardContent className={"flex items-center justify-between gap-6"}>
+                <div className="flex flex-col gap-1">
+                    <Heading size="p" className="text-muted-foreground">
+                        Team Points (Per Team)
+                    </Heading>
+                    <Heading size="p" className="font-semibold">
+                        <Icons.targetArrow className="text-red-600" />
+                        {auction.teamPoints?.toLocaleString() || 0}
+                    </Heading>
                 </div>
 
-                <Button>View Auction</Button>
+                <div className="flex flex-col gap-1">
+                    <Heading size="p" className="text-muted-foreground">
+                        Total Players (Per Team)
+                    </Heading>
+                    <Heading size="p" className="font-semibold">
+                        <Icons.target className="text-purple-600" />
+                        {auction.playerPerTeam || 0}
+                    </Heading>
+                </div>
             </CardContent>
+
+            {isOwner && (
+                <CardContent className="pt-0">
+                    <div className="flex w-full gap-2">
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="outline" className="flex-1">
+                                    <Icons.edit />
+                                    Edit
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Are you sure you want to edit this
+                                        auction?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action will allow you to edit the
+                                        auction details.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => handleEdit(auction.id)}
+                                    >
+                                        Edit Auction
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="destructive"
+                                    className="flex-1"
+                                >
+                                    <Icons.delete />
+                                    Delete
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Are you sure you want to delete this
+                                        auction?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will
+                                        permanently delete the auction and all
+                                        associated data.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => handleDelete(auction.id)}
+                                    >
+                                        Delete Auction
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                </CardContent>
+            )}
         </Card>
     );
 });

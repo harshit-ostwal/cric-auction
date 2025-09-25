@@ -27,7 +27,7 @@ export const Heading = ({ className, size = "h1", id, children, ...props }) => {
             className={cn(
                 headingVariants({ size }),
                 className,
-                "inline-flex items-center gap-3"
+                "inline-flex items-center gap-2"
             )}
             id={id}
             {...props}

@@ -227,6 +227,7 @@ const Profile = memo(() => {
                                 <AuctionCard
                                     key={auction.id}
                                     auction={auction}
+                                    currentUser={session?.user}
                                 />
                             ))}
                         </div>

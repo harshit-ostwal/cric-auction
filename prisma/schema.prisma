@@ -21,7 +21,7 @@ model User {
 }
 
 model Auction {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
   auctionLogo   String?
   auctionName   String
   auctionDate   DateTime
@@ -31,7 +31,6 @@ model Auction {
   bidIncreaseBy Int
   playerPerTeam Int
   venue         String
-  status        AuctionStatus @default(UPCOMING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

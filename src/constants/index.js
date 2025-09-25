@@ -4,7 +4,7 @@ export const SiteLinks = [
         href: "/auctions",
     },
     {
-        name: "My Auctions",
+        name: "My Auction",
         href: "/profile",
     },
 ];

@@ -110,32 +110,24 @@ const HomePage = memo(() => {
 
         const todayAuctions = auctions
             .filter((auction) => {
-                const auctionDate = new Date(auction.auctionDate)
-                    .toISOString()
-                    .split("T")[0];
-                const today = new Date().toISOString().split("T")[0];
+                const today = new Date().toDateString();
+                const auctionDate = new Date(
+                    auction.auctionDate
+                ).toDateString();
+
                 return auctionDate === today;
             })
             .sort((a, b) => {
                 if (a.auctionTime && b.auctionTime) {
-                    const timeA = a.auctionTime
-                        .split(":")
-                        .map((num) => parseInt(num, 10));
-                    const timeB = b.auctionTime
-                        .split(":")
-                        .map((num) => parseInt(num, 10));
-
-                    if (timeA[0] !== timeB[0]) {
-                        return timeA[0] - timeB[0];
-                    }
-                    return timeA[1] - timeB[1];
+                    return a.auctionTime.localeCompare(b.auctionTime);
                 }
 
                 if (a.auctionTime && !b.auctionTime) return -1;
                 if (!a.auctionTime && b.auctionTime) return 1;
 
-                return new Date(a.createdAt) - new Date(b.createdAt);
-            });
+                return 0;
+            })
+            .slice(0, 4);
 
         if (todayAuctions.length === 0) {
             return [
@@ -217,7 +209,7 @@ const HomePage = memo(() => {
                         className={"w-full"}
                         variant={"cricketBlue"}
                     >
-                        <Icons.alertTriangle /> View Auctions
+                        <Icons.cricket /> View Auctions
                     </Button>
                 </Link>
                 <Link href={"/auctions/join"}>
