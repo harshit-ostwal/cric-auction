@@ -42,7 +42,7 @@ SkeletonCard.displayName = "SkeletonCard";
 const StatCard = memo(({ data, index }) => (
     <div
         key={index}
-        className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2 xl:basis-1/3"
+        className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md lg:basis-1/2 xl:basis-1/3"
     >
         <CarouselItem>
             <Card className={cn(data.borderColor, "w-auto border-t-4")}>
@@ -99,7 +99,7 @@ const HomePage = memo(() => {
             return Array.from({ length: 2 }).map((_, index) => (
                 <div
                     key={`auction-skeleton-${index}`}
-                    className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2"
+                    className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md lg:basis-1/2"
                 >
                     <CarouselItem>
                         <AuctionSkeletonCard />
@@ -163,7 +163,7 @@ const HomePage = memo(() => {
         return todayAuctions.map((auction) => (
             <div
                 key={auction.id}
-                className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md md:basis-1/2"
+                className="group relative w-full flex-shrink-0 basis-full cursor-pointer overflow-hidden rounded-md lg:basis-1/2"
             >
                 <CarouselItem>
                     <AuctionCard auction={auction} />
