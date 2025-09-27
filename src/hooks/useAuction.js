@@ -2,25 +2,42 @@
 import axiosClient from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 export const useAuctions = () => {
     return useQuery({
         queryKey: ["auctions"],
         queryFn: async () => {
-            const res = await axiosClient.get("/auctions");
+            const res = await axiosClient.get("/auction");
             return res.data.data;
         },
     });
 };
 
-export const useGetAuctionByUser = () => {
+export const useGetAuctionsByUserId = (userId) => {
     return useQuery({
-        queryKey: ["auction"],
+        queryKey: ["auctions", "user", userId],
         queryFn: async () => {
-            const res = await axiosClient.get("/auction");
+            const res = await axiosClient.get(`/auction/user/${userId}`);
             return res.data.data;
         },
+        enabled: !!userId,
+    });
+};
+
+export const useGetMyAuctions = () => {
+    const { data: session } = useSession();
+
+    return useQuery({
+        queryKey: ["auctions", "user", session?.user?.id],
+        queryFn: async () => {
+            const res = await axiosClient.get(
+                `/auction/user/${session?.user?.id}`
+            );
+            return res.data.data;
+        },
+        enabled: !!session?.user?.id,
     });
 };
 
@@ -29,8 +46,9 @@ export const useGetAuctionById = (id) => {
         queryKey: ["auction", id],
         queryFn: async () => {
             const res = await axiosClient.get(`/auction/${id}`);
-            return res.data;
+            return res.data.data;
         },
+        enabled: !!id,
     });
 };
 
@@ -50,6 +68,7 @@ export const useCreateAuction = () => {
                 toast.error(res?.message || "Failed to create auction.");
             }
             queryClient.invalidateQueries({ queryKey: ["auctions"] });
+            queryClient.invalidateQueries({ queryKey: ["auction"] });
             router.replace("/");
         },
         onError: (err) => {
@@ -74,6 +93,7 @@ export const useDeleteAuction = () => {
             } else {
                 toast.error(res?.message || "Failed to delete auction.");
             }
+            queryClient.invalidateQueries({ queryKey: ["auctions"] });
             queryClient.invalidateQueries({ queryKey: ["auction"] });
         },
         onError: (err) => {
@@ -98,6 +118,7 @@ export const useUpdateAuction = () => {
                 toast.error(res?.message || "Failed to update auction.");
             }
             queryClient.invalidateQueries({ queryKey: ["auctions"] });
+            queryClient.invalidateQueries({ queryKey: ["auction"] });
         },
         onError: (err) => {
             toast.error(

@@ -14,10 +14,7 @@ export async function GET() {
             );
         }
 
-        const auctions = await prisma.auction.findMany({
-            where: { userId: session.user.id },
-            orderBy: { createdAt: "desc" },
-        });
+        const auctions = await prisma.auction.findMany();
 
         return NextResponse.json(
             {
@@ -47,6 +44,23 @@ export async function POST(req) {
         }
 
         const body = await req.json();
+
+        const first = Math.floor(10000 + Math.random() * 90000);
+        const second = Math.floor(100 + Math.random() * 900);
+        const code = `${first}${second}`;
+
+        const exists = await prisma.auction.findUnique({
+            where: { auctionCode: code },
+        });
+
+        if (exists) {
+            return NextResponse.json(
+                { success: false, message: "Please try again" },
+                { status: 400 }
+            );
+        }
+
+        body.auctionCode = code;
 
         const auction = await prisma.auction.create({
             data: {

@@ -13,7 +13,7 @@ import { Icons } from "@/shared/icons";
 import { format } from "date-fns/format";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useDeleteAuction, useUpdateAuction } from "@/hooks/useAuction";
+import { useDeleteAuction } from "@/hooks/useAuction";
 import {
     AlertDialog,
     AlertDialogAction,

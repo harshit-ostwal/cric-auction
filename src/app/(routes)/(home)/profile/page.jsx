@@ -13,7 +13,7 @@ import React, { memo, useState } from "react";
 import { CarouselItem } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetAuctionByUser } from "@/hooks/useAuction";
+import { useGetMyAuctions } from "@/hooks/useAuction";
 import { AuctionCard, AuctionSkeletonCard } from "@/components/AuctionCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut, useSession } from "next-auth/react";
@@ -28,6 +28,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import Link from "next/link";
 
 const UserAvatar = memo(function UserAvatar({ session }) {
     return (
@@ -94,7 +95,7 @@ const StatCard = memo(({ data, index }) => (
 StatCard.displayName = "StatCard";
 
 const Profile = memo(() => {
-    const { data: auctions } = useGetAuctionByUser();
+    const { data: auctions } = useGetMyAuctions();
     const { data: session, status } = useSession();
     const [loading, setLoading] = useState(false);
 
@@ -217,9 +218,16 @@ const Profile = memo(() => {
             </Card>
 
             <div className="flex flex-col gap-6">
-                <Heading size="h4" className="font-semibold">
-                    My Auctions
-                </Heading>
+                <div className="flex items-center justify-between gap-4">
+                    <Heading size="h4" className="font-semibold">
+                        My Auctions
+                    </Heading>
+                    <Link href={"/auctions/create"}>
+                        <Button variant={"cricketBlue"}>
+                            <Icons.gavel /> Create Auction
+                        </Button>
+                    </Link>
+                </div>
                 {auctions ? (
                     auctions.length > 0 ? (
                         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

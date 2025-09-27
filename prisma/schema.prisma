@@ -15,33 +15,93 @@ model User {
   image    String?
   role     Role      @default(USER)
   auctions Auction[]
+  bids     Bidder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Auction {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  auctionLogo   String?
-  auctionName   String
-  auctionDate   DateTime
-  auctionTime   String
-  teamPoints    Int
-  minimumBid    Int
-  bidIncreaseBy Int
-  playerPerTeam Int
-  venue         String
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  auctionLogo        String?
+  auctionCode        String   @unique
+  auctionName        String
+  auctionDate        DateTime
+  auctionTime        String
+  teamPoints         Int
+  minimumBid         Int
+  bidIncreaseBy      Int
+  playerPerTeam      Int
+  venue              String
+  playerRegistration Boolean  @default(true)
+
+  teams   Team[]
+  players Player[]
+  bidders Bidder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  User   User?   @relation(fields: [userId], references: [id])
+  user   User?   @relation(fields: [userId], references: [id])
   userId String? @db.ObjectId
+}
+
+model Team {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  teamLogo        String?
+  teamName        String
+  teamPoints      Int?
+  teamUsedPoints  Int?
+  maxBid          Int?
+  numberOfPlayers Int?
+
+  players Player[]
+  bidders Bidder[]
+
+  auction   Auction? @relation(fields: [auctionId], references: [id])
+  auctionId String?  @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Player {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  playerName   String
+  baseValue    Int?
+  soldValue    Int?      @default(0)
+  soldUnsoldAt DateTime?
+  isTeamLead   Boolean   @default(false)
+
+  auction   Auction? @relation(fields: [auctionId], references: [id])
+  auctionId String?  @db.ObjectId
+
+  team   Team?   @relation(fields: [teamId], references: [id])
+  teamId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bidder {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  auction   Auction? @relation(fields: [auctionId], references: [id])
+  auctionId String?  @db.ObjectId
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @db.ObjectId
+
+  team   Team?   @relation(fields: [teamId], references: [id])
+  teamId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, teamId])
 }
 
 enum Role {
   ADMIN
-  BIDDER
-  VIEWER
   USER
 }

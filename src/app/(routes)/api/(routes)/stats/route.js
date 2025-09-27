@@ -13,21 +13,65 @@ export async function GET() {
             );
         }
 
-        const auctionStats = await prisma.auction.findMany();
+        const auctionStats = await prisma.auction.findMany({
+            select: {
+                id: true,
+                auctionDate: true,
+                auctionTime: true,
+                createdAt: true,
+            },
+        });
+
+        const now = new Date();
+
+        const getAuctionStatus = (auction) => {
+            if (!auction.auctionDate || !auction.auctionTime) {
+                return "UPCOMING";
+            }
+
+            const auctionDateTime = new Date(
+                `${auction.auctionDate}T${auction.auctionTime}`
+            );
+
+            const auctionEndTime = new Date(
+                auctionDateTime.getTime() + 4 * 60 * 60 * 1000
+            );
+
+            if (now < auctionDateTime) {
+                return "UPCOMING";
+            } else if (now >= auctionDateTime && now <= auctionEndTime) {
+                return "ONGOING";
+            } else {
+                return "COMPLETED";
+            }
+        };
+
+        let totalUpcomingAuctions = 0;
+        let totalOngoingAuctions = 0;
+        let totalCompletedAuctions = 0;
+
+        auctionStats.forEach((auction) => {
+            const status = getAuctionStatus(auction);
+            switch (status) {
+                case "UPCOMING":
+                    totalUpcomingAuctions++;
+                    break;
+                case "ONGOING":
+                    totalOngoingAuctions++;
+                    break;
+                case "COMPLETED":
+                    totalCompletedAuctions++;
+                    break;
+            }
+        });
 
         return NextResponse.json(
             {
                 data: {
                     auctionStats: auctionStats.length,
-                    totalOngoingAuctions: auctionStats.filter(
-                        (auction) => auction.status === "ONGOING"
-                    ).length,
-                    totalUpcomingAuctions: auctionStats.filter(
-                        (auction) => auction.status === "UPCOMING"
-                    ).length,
-                    totalCompletedAuctions: auctionStats.filter(
-                        (auction) => auction.status === "COMPLETED"
-                    ).length,
+                    totalOngoingAuctions,
+                    totalUpcomingAuctions,
+                    totalCompletedAuctions,
                 },
                 success: true,
                 message: "Auction stats retrieved successfully",

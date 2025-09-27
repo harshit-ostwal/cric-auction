@@ -1,0 +1,110 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Heading } from "@/components/ui/headings";
+import { Switch } from "@/components/ui/switch";
+import { Icons } from "@/shared/icons";
+import React from "react";
+import { toast } from "sonner";
+
+const StatCard = React.memo(({ icon: Icon, label, value }) => (
+    <div className="flex items-center gap-4">
+        <span className="rounded-full border p-3">
+            <Icon size={28} />
+        </span>
+        <div className="flex flex-col -space-y-1">
+            <Heading size="p" className="text-muted-foreground">
+                {label}
+            </Heading>
+            <Heading size="h6" className="font-semibold">
+                {value}
+            </Heading>
+        </div>
+    </div>
+));
+
+StatCard.displayName = "StatCard";
+
+function About({ auction }) {
+    const auctionStats = React.useMemo(
+        () => [
+            {
+                id: "code",
+                icon: Icons.hash || Icons.cricket,
+                label: "Auction Code",
+                value: auction?.auctionCode
+                    ? `${auction.auctionCode.slice(0, 5)}-${auction.auctionCode.slice(5, 8)}`
+                    : "N/A",
+            },
+            {
+                id: "points",
+                icon: Icons.coins || Icons.gavel,
+                label: "Team Points",
+                value: auction?.teamPoints?.toLocaleString() || 0,
+            },
+            {
+                id: "minBid",
+                icon: Icons.dollarSign || Icons.gavel,
+                label: "Minimum Bid",
+                value: auction?.minimumBid?.toLocaleString() || 0,
+            },
+            {
+                id: "bidIncrease",
+                icon: Icons.trendingUp || Icons.arrowUp,
+                label: "Bid Increase",
+                value: auction?.bidIncreaseBy?.toLocaleString() || 0,
+            },
+            {
+                id: "teams",
+                icon: Icons.userGroup,
+                label: "Teams",
+                value: `${auction?.teams || 0} ${(auction?.teams || 0) === 1 ? "Team" : "Teams"}`,
+            },
+            {
+                id: "players",
+                icon: Icons.users,
+                label: "Players",
+                value: `${auction?.players || 0} ${(auction?.players || 0) === 1 ? "Player" : "Players"}`,
+            },
+        ],
+        [auction]
+    );
+
+    return (
+        <div className="flex flex-col gap-10">
+            <Card>
+                <CardContent>
+                    <div className="grid grid-cols-2 gap-6 lg:grid-cols-3">
+                        {auctionStats.map((stat) => (
+                            <StatCard
+                                key={stat.id}
+                                icon={stat.icon}
+                                label={stat.label}
+                                value={stat.value}
+                            />
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                    <Heading size="h5" className={"font-semibold"}>
+                        Player Registeration
+                    </Heading>
+                    <Heading size="p" className="text-muted-foreground">
+                        Allow players to register themselves for this auction
+                    </Heading>
+                </div>
+                <Switch
+                    checked={auction?.playerRegistration}
+                    onCheckedChange={(checked) => {
+                        toast.success(
+                            `Player registration ${checked ? "enabled" : "disabled"}`
+                        );
+                    }}
+                />
+            </div>
+        </div>
+    );
+}
+
+export default React.memo(About);

@@ -8,7 +8,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Heading } from "@/components/ui/headings";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createAuctionSchema } from "@/validations/(routes)/auctions";
@@ -32,19 +32,20 @@ function Page() {
     const params = useParams();
     const router = useRouter();
 
+    const auctionId = params?.id;
+
     useEffect(() => {
-        if (!params.id) {
+        if (!auctionId) {
             router.push("/");
         }
-    }, [params.id, router]);
+    }, [auctionId, router]);
 
-    const { data: auctionResponse } = useGetAuctionById(params.id);
+    const { data: auctionResponse } = useGetAuctionById(auctionId);
 
     const auctionData = auctionResponse?.data;
 
-    const auctionForm = useForm({
-        resolver: zodResolver(createAuctionSchema),
-        defaultValues: {
+    const defaultValues = useMemo(
+        () => ({
             auctionName: "",
             auctionDate: new Date(),
             auctionTime: "",
@@ -52,56 +53,71 @@ function Page() {
             minimumBid: undefined,
             bidIncreaseBy: undefined,
             playerPerTeam: undefined,
-            venue: undefined,
-        },
+            venue: "",
+        }),
+        []
+    );
+
+    const auctionForm = useForm({
+        resolver: zodResolver(createAuctionSchema),
+        defaultValues,
     });
 
+    const resetValues = useMemo(() => {
+        if (!auctionData) return null;
+
+        return {
+            auctionName: auctionData.auctionName || "",
+            auctionDate: auctionData.auctionDate
+                ? new Date(auctionData.auctionDate)
+                : new Date(),
+            auctionTime: auctionData.auctionTime || "",
+            teamPoints: auctionData.teamPoints || undefined,
+            minimumBid: auctionData.minimumBid || undefined,
+            bidIncreaseBy: auctionData.bidIncreaseBy || undefined,
+            playerPerTeam: auctionData.playerPerTeam || undefined,
+            venue: auctionData.venue || undefined,
+        };
+    }, [auctionData]);
+
     useEffect(() => {
-        if (auctionData) {
-            auctionForm.reset({
-                auctionName: auctionData.auctionName || "",
-                auctionDate: auctionData.auctionDate
-                    ? new Date(auctionData.auctionDate)
-                    : new Date(),
-                auctionTime: auctionData.auctionTime || "",
-                teamPoints: auctionData.teamPoints || undefined,
-                minimumBid: auctionData.minimumBid || undefined,
-                bidIncreaseBy: auctionData.bidIncreaseBy || undefined,
-                playerPerTeam: auctionData.playerPerTeam || undefined,
-                venue: auctionData.venue || undefined,
-            });
+        if (resetValues) {
+            auctionForm.reset(resetValues);
         }
-    }, [auctionData, auctionForm]);
+    }, [resetValues, auctionForm]);
 
     const { mutate: updateAuction } = useUpdateAuction();
 
-    const onSubmit = (data) => {
-        if (!params.id) {
-            return;
-        }
-
-        setLoading(true);
-        updateAuction(
-            {
-                id: params.id,
-                data: data,
-            },
-            {
-                onSuccess: () => {
-                    setLoading(false);
-                    router.push("/");
-                },
-                onError: () => {
-                    setLoading(false);
-                },
-                onSettled: () => {
-                    setLoading(false);
-                },
+    const onSubmit = useCallback(
+        (data) => {
+            if (!auctionId) {
+                return;
             }
-        );
-    };
 
-    if (!params.id) {
+            setLoading(true);
+            updateAuction(
+                {
+                    id: auctionId,
+                    data: data,
+                },
+                {
+                    onSuccess: () => {
+                        setLoading(false);
+                        router.push("/");
+                    },
+                    onError: () => {
+                        setLoading(false);
+                    },
+                    onSettled: () => {
+                        setLoading(false);
+                    },
+                }
+            );
+        },
+        [auctionId, updateAuction, router]
+    );
+
+    if (!auctionId) {
         return null;
     }
 

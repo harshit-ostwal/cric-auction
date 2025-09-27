@@ -5,15 +5,6 @@ import prisma from "@/lib/prisma";
 
 export async function GET(req, { params }) {
     try {
-        const session = await getServerSession(authOptions);
-
-        if (!session?.user?.email) {
-            return NextResponse.json(
-                { success: false, message: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
         const { id } = await params;
 
         const auction = await prisma.auction.findUnique({
@@ -24,13 +15,6 @@ export async function GET(req, { params }) {
             return NextResponse.json(
                 { success: false, message: "Auction not found" },
                 { status: 404 }
-            );
-        }
-
-        if (auction.userId !== session.user.id) {
-            return NextResponse.json(
-                { success: false, message: "Forbidden" },
-                { status: 403 }
             );
         }
 
@@ -64,7 +48,7 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { id } = params;
+        const { id } = await params;
 
         const auction = await prisma.auction.findUnique({
             where: { id },
@@ -113,7 +97,7 @@ export async function PATCH(req, { params }) {
                 { status: 401 }
             );
         }
-        const { id } = params;
+        const { id } = await params;
 
         const auction = await prisma.auction.findUnique({
             where: { id },

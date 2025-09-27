@@ -1,7 +1,7 @@
-import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/app/(routes)/api/auth/[...nextauth]/route";
 
 export async function GET() {
     try {
@@ -14,7 +14,10 @@ export async function GET() {
             );
         }
 
-        const auctions = await prisma.auction.findMany();
+        const auctions = await prisma.auction.findMany({
+            where: { userId: session.user.id },
+            orderBy: { createdAt: "desc" },
+        });
 
         return NextResponse.json(
             {
