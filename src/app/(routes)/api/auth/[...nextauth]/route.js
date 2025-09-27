@@ -25,11 +25,18 @@ export const authOptions = {
                 if (account.provider === "google") {
                     if (!profile.email_verified) return false;
 
+                    const existingUser = await prisma.user.findUnique({
+                        where: { email: profile.email },
+                        select: { image: true },
+                    });
+
                     await prisma.user.upsert({
                         where: { email: profile.email },
                         update: {
                             fullName: profile.name,
-                            image: profile.picture,
+                            ...(!existingUser?.image && {
+                                image: profile.picture,
+                            }),
                         },
                         create: {
                             email: profile.email,
@@ -45,7 +52,7 @@ export const authOptions = {
             }
         },
 
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             if (user?.email) {
                 const dbUser = await prisma.user.findUnique({
                     where: { email: user.email },
@@ -53,8 +60,20 @@ export const authOptions = {
                 if (dbUser) {
                     token.id = dbUser.id;
                     token.image = dbUser.image;
+                    token.fullName = dbUser.fullName;
                 }
             }
+
+            if (trigger === "update") {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: token.id },
+                });
+                if (dbUser) {
+                    token.image = dbUser.image;
+                    token.fullName = dbUser.fullName;
+                }
+            }
+
             return token;
         },
 
@@ -64,6 +83,9 @@ export const authOptions = {
             }
             if (token?.image) {
                 session.user.image = token.image;
+            }
+            if (token?.fullName) {
+                session.user.name = token.fullName;
             }
             return session;
         },

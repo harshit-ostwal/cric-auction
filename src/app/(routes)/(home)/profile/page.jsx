@@ -29,21 +29,71 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
+import { CldUploadWidget } from "next-cloudinary";
+import { useUpdateUser } from "@/hooks/useUser";
 
 const UserAvatar = memo(function UserAvatar({ session }) {
+    const { mutate: updateUser } = useUpdateUser();
+
+    const handleUploadSuccess = (result, { widget }) => {
+        if (result?.info?.secure_url) {
+            const imageUrl = result.info.secure_url;
+            updateUser({
+                id: session.user.id,
+                data: { image: imageUrl },
+            });
+
+            widget.close();
+        }
+    };
+
     return (
-        <Avatar className={"size-20 lg:size-24"}>
-            {session?.user?.image ? (
-                <AvatarImage
-                    src={session.user.image}
-                    alt={session.user.name ?? "User avatar"}
-                />
-            ) : (
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                    {session?.user?.name?.charAt(0).toUpperCase() ?? "HJ"}
-                </AvatarFallback>
-            )}
-        </Avatar>
+        <CldUploadWidget
+            uploadPreset="cric-auction"
+            options={{
+                maxFiles: 1,
+                multiple: false,
+                resourceType: "image",
+                clientAllowedFormats: ["jpg", "jpeg", "png", "gif", "webp"],
+                maxImageFileSize: 5000000,
+                folder: "Cric Auction",
+            }}
+            onSuccess={handleUploadSuccess}
+        >
+            {({ open }) => {
+                return (
+                    <div
+                        className="group relative cursor-pointer"
+                        onClick={open}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                open();
+                            }
+                        }}
+                    >
+                        <Avatar className="size-20 transition-opacity group-hover:opacity-80 lg:size-24">
+                            {session?.user?.image ? (
+                                <AvatarImage
+                                    src={session.user.image}
+                                    alt={session.user.name ?? "User avatar"}
+                                />
+                            ) : (
+                                <AvatarFallback className="bg-primary text-primary-foreground">
+                                    {session?.user?.name
+                                        ?.charAt(0)
+                                        .toUpperCase() ?? "HJ"}
+                                </AvatarFallback>
+                            )}
+                        </Avatar>
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                            <Icons.camera className="h-6 w-6 text-white" />
+                        </div>
+                    </div>
+                );
+            }}
+        </CldUploadWidget>
     );
 });
 

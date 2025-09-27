@@ -12,6 +12,7 @@ import {
     IconBrandInstagram,
     IconBrandX,
     IconCalendarWeek,
+    IconCamera,
     IconLock,
     IconChalkboard,
     IconCheck,
@@ -166,6 +167,7 @@ export const Icons = {
     fireExtinguisher: IconSTurnDown,
     utensils: IconPictureInPicture,
     megaphone: IconPhoneCalling,
+    camera: IconCamera,
 
     arrowSort: IconArrowsSort,
     shieldCheck: IconUserShield,
