@@ -29,8 +29,9 @@ export async function GET() {
                 return "UPCOMING";
             }
 
+            let auctionDate = auction.auctionDate.toISOString().split("T")[0];
             const auctionDateTime = new Date(
-                `${auction.auctionDate}T${auction.auctionTime}`
+                `${auctionDate}T${auction.auctionTime}`
             );
 
             const auctionEndTime = new Date(
