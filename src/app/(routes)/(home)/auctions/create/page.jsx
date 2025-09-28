@@ -25,6 +25,8 @@ import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
 import { useCreateAuction } from "@/hooks/useAuction";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from "next-cloudinary";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function Page() {
     const [open, setOpen] = useState(false);
@@ -33,6 +35,7 @@ function Page() {
     const auctionForm = useForm({
         resolver: zodResolver(createAuctionSchema),
         defaultValues: {
+            auctionLogo: "",
             auctionName: "",
             auctionDate: new Date(),
             auctionTime: "",
@@ -52,15 +55,12 @@ function Page() {
         createAuction(data, {
             onSuccess: () => {
                 setLoading(false);
+                router.replace("/");
             },
             onError: () => {
                 setLoading(false);
             },
-            onSettled: () => {
-                setLoading(false);
-            },
         });
-        router.replace("/");
     };
 
     return (
@@ -80,6 +80,74 @@ function Page() {
                     onSubmit={auctionForm.handleSubmit(onSubmit)}
                     className="flex flex-col gap-8"
                 >
+                    <CldUploadWidget
+                        uploadPreset="cric-auction"
+                        options={{
+                            maxFiles: 1,
+                            multiple: false,
+                            resourceType: "image",
+                            clientAllowedFormats: [
+                                "jpg",
+                                "jpeg",
+                                "png",
+                                "gif",
+                                "webp",
+                            ],
+                            maxImageFileSize: 5000000,
+                            folder: "Cric Auction",
+                        }}
+                        onSuccess={(result, { widget }) => {
+                            auctionForm.setValue(
+                                "auctionLogo",
+                                result.info.secure_url
+                            );
+                            auctionForm.setValue(
+                                "auctionLogoPublicId",
+                                result.info.public_id
+                            );
+                            auctionForm.trigger("auctionLogo");
+                            widget.close();
+                        }}
+                    >
+                        {({ open }) => {
+                            return (
+                                <div
+                                    className="group relative w-fit cursor-pointer"
+                                    onClick={open}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (
+                                            e.key === "Enter" ||
+                                            e.key === " "
+                                        ) {
+                                            open();
+                                        }
+                                    }}
+                                >
+                                    <Avatar className={"size-32 lg:size-32"}>
+                                        <AvatarImage
+                                            src={
+                                                auctionForm.watch(
+                                                    "auctionLogo"
+                                                ) ?? ""
+                                            }
+                                            alt="Auction Logo"
+                                        />
+                                        <AvatarFallback
+                                            className={"bg-muted-foreground"}
+                                        >
+                                            <Icons.camera className="h-6 w-6 text-white" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                                        <Icons.camera className="h-6 w-6 text-white" />
+                                    </div>
+                                </div>
+                            );
+                        }}
+                    </CldUploadWidget>
+
                     <div className="grid items-start gap-6 md:grid-cols-2">
                         <FormField
                             name="auctionName"

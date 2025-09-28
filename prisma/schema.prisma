@@ -9,31 +9,33 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  fullName String
-  email    String    @unique
-  image    String?
-  role     Role      @default(USER)
-  auctions Auction[]
-  bids     Bidder[]
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  fullName      String
+  email         String    @unique
+  image         String?
+  imagePublicId String?
+  role          Role      @default(USER)
+  auctions      Auction[]
+  bids          Bidder[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Auction {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  auctionLogo        String?
-  auctionCode        String   @unique
-  auctionName        String
-  auctionDate        DateTime
-  auctionTime        String
-  teamPoints         Int
-  minimumBid         Int
-  bidIncreaseBy      Int
-  playerPerTeam      Int
-  venue              String
-  playerRegistration Boolean  @default(true)
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  auctionLogo         String?
+  auctionLogoPublicId String?
+  auctionCode         String   @unique
+  auctionName         String
+  auctionDate         DateTime
+  auctionTime         String
+  teamPoints          Int
+  minimumBid          Int
+  bidIncreaseBy       Int
+  playerPerTeam       Int
+  venue               String
+  playerRegistration  Boolean  @default(true)
 
   teams   Team[]
   players Player[]
@@ -47,13 +49,14 @@ model Auction {
 }
 
 model Team {
-  id              String  @id @default(auto()) @map("_id") @db.ObjectId
-  teamLogo        String?
-  teamName        String
-  teamPoints      Int?
-  teamUsedPoints  Int?
-  maxBid          Int?
-  numberOfPlayers Int?
+  id               String  @id @default(auto()) @map("_id") @db.ObjectId
+  teamLogo         String?
+  teamLogoPublicId String?
+  teamName         String
+  teamPoints       Int?
+  teamUsedPoints   Int?
+  maxBid           Int?
+  numberOfPlayers  Int?
 
   players Player[]
   bidders Bidder[]

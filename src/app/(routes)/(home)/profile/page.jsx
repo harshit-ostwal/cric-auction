@@ -31,16 +31,27 @@ import {
 import Link from "next/link";
 import { CldUploadWidget } from "next-cloudinary";
 import { useUpdateUser } from "@/hooks/useUser";
+import { useDeleteImage } from "@/hooks/useCloudinary";
 
 const UserAvatar = memo(function UserAvatar({ session }) {
     const { mutate: updateUser } = useUpdateUser();
+    const { mutate: deleteImage } = useDeleteImage();
 
-    const handleUploadSuccess = (result, { widget }) => {
+    const handleUploadSuccess = async (result, { widget }) => {
         if (result?.info?.secure_url) {
-            const imageUrl = result.info.secure_url;
+            const newImageUrl = result.info.secure_url;
+            const newPublicId = result.info.public_id;
+
+            if (session?.user?.imagePublicId) {
+                deleteImage(session.user.imagePublicId);
+            }
+
             updateUser({
                 id: session.user.id,
-                data: { image: imageUrl },
+                data: {
+                    image: newImageUrl,
+                    imagePublicId: newPublicId,
+                },
             });
 
             widget.close();

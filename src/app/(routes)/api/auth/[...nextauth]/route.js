@@ -36,6 +36,7 @@ export const authOptions = {
                             fullName: profile.name,
                             ...(!existingUser?.image && {
                                 image: profile.picture,
+                                imagePublicId: null,
                             }),
                         },
                         create: {
@@ -43,6 +44,7 @@ export const authOptions = {
                             fullName: profile.name,
                             role: "USER",
                             image: profile.picture,
+                            imagePublicId: null,
                         },
                     });
                 }
@@ -60,6 +62,7 @@ export const authOptions = {
                 if (dbUser) {
                     token.id = dbUser.id;
                     token.image = dbUser.image;
+                    token.imagePublicId = dbUser.imagePublicId;
                     token.fullName = dbUser.fullName;
                 }
             }
@@ -70,6 +73,7 @@ export const authOptions = {
                 });
                 if (dbUser) {
                     token.image = dbUser.image;
+                    token.imagePublicId = dbUser.imagePublicId;
                     token.fullName = dbUser.fullName;
                 }
             }
@@ -83,6 +87,9 @@ export const authOptions = {
             }
             if (token?.image) {
                 session.user.image = token.image;
+            }
+            if (token?.imagePublicId) {
+                session.user.imagePublicId = token.imagePublicId;
             }
             if (token?.fullName) {
                 session.user.name = token.fullName;
