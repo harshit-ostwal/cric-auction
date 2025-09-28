@@ -25,7 +25,7 @@ const StatCard = React.memo(({ icon: Icon, label, value }) => (
 
 StatCard.displayName = "StatCard";
 
-function About({ auction }) {
+function About({ auction,isOwner }) {
     const { mutate: updateAuction } = useUpdateAuction();
 
     const auctionStats = React.useMemo(
@@ -76,7 +76,7 @@ function About({ auction }) {
         <div className="flex flex-col gap-10">
             <Card>
                 <CardContent>
-                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         {auctionStats.map((stat) => (
                             <StatCard
                                 key={stat.id}
@@ -126,7 +126,7 @@ function About({ auction }) {
             </div>
 
             <div className="flex items-center justify-between">
-                <div className="flex flex-col">
+              {isOwner && (  <div className="flex flex-col">
                     <Heading size="h5" className={"font-semibold"}>
                         Player Registeration Link
                     </Heading>
@@ -134,7 +134,7 @@ function About({ auction }) {
                         Share this link with players to allow them to join the
                         auction.
                     </Heading>
-                </div>
+                </div>)}
                 <Button
                     variant="outline"
                     onClick={() => {
