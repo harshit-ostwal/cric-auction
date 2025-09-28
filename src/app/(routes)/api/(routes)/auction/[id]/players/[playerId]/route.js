@@ -7,13 +7,6 @@ export async function GET(req, { params }) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user?.email) {
-            return NextResponse.json(
-                { success: false, message: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
         const { id: auctionId, playerId } = await params;
 
         const player = await prisma.player.findFirst({
