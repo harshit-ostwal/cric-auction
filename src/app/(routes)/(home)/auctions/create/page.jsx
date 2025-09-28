@@ -25,8 +25,8 @@ import { format } from "date-fns/format";
 import { cn } from "@/lib/utils";
 import { useCreateAuction } from "@/hooks/useAuction";
 import { useRouter } from "next/navigation";
-import { CldUploadWidget } from "next-cloudinary";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { CldUploadWidget } from "next-cloudinary";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function Page() {
     const [open, setOpen] = useState(false);

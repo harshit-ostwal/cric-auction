@@ -4,7 +4,6 @@ import { Heading } from "@/components/ui/headings";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateAuction } from "@/hooks/useAuction";
 import { Icons } from "@/shared/icons";
-import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
 
