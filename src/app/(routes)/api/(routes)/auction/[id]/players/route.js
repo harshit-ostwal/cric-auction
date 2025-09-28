@@ -50,13 +50,6 @@ export async function POST(req) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session?.user?.email) {
-            return NextResponse.json(
-                { success: false, message: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
         const body = await req.json();
 
         const auction = await prisma.auction.findFirst({
