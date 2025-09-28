@@ -124,7 +124,7 @@ function Page() {
                         </TabsContent>
                         <TabsContent value="mvp">MVP</TabsContent>
                         <TabsContent value="about">
-                            <About auction={auction} />
+                            <About isOwner={isOwner} auction={auction} />
                         </TabsContent>
                     </Tabs>
                 </>
