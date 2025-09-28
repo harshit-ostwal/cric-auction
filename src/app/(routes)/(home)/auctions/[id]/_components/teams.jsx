@@ -43,9 +43,11 @@ function Teams({ isOwner, auction }) {
 
     const { mutate: createTeam } = useCreateTeam();
     const { mutate: deleteTeam } = useDeleteTeam(auction.id);
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
     const onSubmit = (data) => {
+        setLoading(true);
         const maxBid =
             auction.teamPoints -
             auction.minimumBid * (auction.playerPerTeam - 1);
@@ -61,6 +63,7 @@ function Teams({ isOwner, auction }) {
             onSettled: () => {
                 teamForm.reset();
                 setOpen(false);
+                setLoading(false);
             },
         });
     };
@@ -69,7 +72,12 @@ function Teams({ isOwner, auction }) {
         <div className="flex flex-col gap-4">
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button className={"ml-auto"} variant={"cricketBlue"}>
+                    <Button
+                        isLoading={loading || teamForm.formState.isSubmitting}
+                        disabled={!isOwner || teamForm.formState.isSubmitting}
+                        className={"ml-auto"}
+                        variant={"cricketBlue"}
+                    >
                         <Icons.plus /> Add Team
                     </Button>
                 </DialogTrigger>
@@ -107,7 +115,12 @@ function Teams({ isOwner, auction }) {
 
                             <Button
                                 type="submit"
-                                isLoading={teamForm.formState.isSubmitting}
+                                isLoading={
+                                    loading || teamForm.formState.isSubmitting
+                                }
+                                disabled={
+                                    loading || teamForm.formState.isSubmitting
+                                }
                             >
                                 Add Team
                             </Button>
