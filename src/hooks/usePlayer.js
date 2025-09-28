@@ -3,61 +3,61 @@ import axiosClient from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const useTeams = (id) => {
+export const usePlayers = (id) => {
     return useQuery({
-        queryKey: ["teams", id],
+        queryKey: ["players", id],
         queryFn: async () => {
-            const res = await axiosClient.get(`/auction/${id}/teams`);
+            const res = await axiosClient.get(`/auction/${id}/players`);
             return res.data.data;
         },
     });
 };
 
-export const useTeamById = (auctionId, teamId) => {
+export const usePlayerById = (auctionId, playerId) => {
     return useQuery({
-        queryKey: ["team", auctionId, teamId],
+        queryKey: ["player", auctionId, playerId],
         queryFn: async () => {
             const res = await axiosClient.get(
-                `/auction/${auctionId}/teams/${teamId}`
+                `/auction/${auctionId}/players/${playerId}`
             );
             return res.data;
         },
-        enabled: !!auctionId && !!teamId,
+        enabled: !!auctionId && !!playerId,
     });
 };
 
-export const useDeleteTeam = (auctionId) => {
+export const useDeletePlayer = (auctionId) => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (teamId) => {
+        mutationFn: async (playerId) => {
             const res = await axiosClient.delete(
-                `/auction/${auctionId}/teams/${teamId}`
+                `/auction/${auctionId}/players/${playerId}`
             );
             return res.data;
         },
         onSuccess: () => {
-            toast.success("Team deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ["teams"] });
+            toast.success("Player deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ["players"] });
             queryClient.invalidateQueries({ queryKey: ["auction"] });
         },
     });
 };
 
-export const useCreateTeam = () => {
+export const useCreatePlayer = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (data) => {
             const res = await axiosClient.post(
-                `/auction/${data.auctionId}/teams`,
+                `/auction/${data.auctionId}/players`,
                 data
             );
             return res.data;
         },
         onSuccess: () => {
-            toast.success("Team added successfully");
+            toast.success("Player added successfully");
             queryClient.invalidateQueries({ queryKey: ["auction"] });
-            queryClient.invalidateQueries({ queryKey: ["teams"] });
+            queryClient.invalidateQueries({ queryKey: ["players"] });
         },
         onError: () => {
             toast.error("Something went wrong");
@@ -65,21 +65,22 @@ export const useCreateTeam = () => {
     });
 };
 
-export const useUpdateTeam = (auctionId) => {
+export const useUpdatePlayer = (auctionId) => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ teamId, data }) => {
+        mutationFn: async ({ playerId, data }) => {
             const res = await axiosClient.patch(
-                `/auction/${auctionId}/teams/${teamId}`,
+                `/auction/${auctionId}/players/${playerId}`,
                 data
             );
             return res.data;
         },
         onSuccess: () => {
-            toast.success("Team updated successfully");
+            toast.success("Player updated successfully");
             queryClient.invalidateQueries({ queryKey: ["auction"] });
-            queryClient.invalidateQueries({ queryKey: ["teams"] });
+            queryClient.invalidateQueries({ queryKey: ["players"] });
+            queryClient.invalidateQueries({ queryKey: ["player"] });
         },
         onError: () => {
             toast.error("Something went wrong");

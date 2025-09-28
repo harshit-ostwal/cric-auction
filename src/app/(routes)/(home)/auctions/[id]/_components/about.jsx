@@ -1,7 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heading } from "@/components/ui/headings";
 import { Switch } from "@/components/ui/switch";
+import { useUpdateAuction } from "@/hooks/useAuction";
 import { Icons } from "@/shared/icons";
+import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
 
@@ -24,6 +27,8 @@ const StatCard = React.memo(({ icon: Icon, label, value }) => (
 StatCard.displayName = "StatCard";
 
 function About({ auction }) {
+    const { mutate: updateAuction } = useUpdateAuction();
+
     const auctionStats = React.useMemo(
         () => [
             {
@@ -97,11 +102,50 @@ function About({ auction }) {
                 <Switch
                     checked={auction?.playerRegistration}
                     onCheckedChange={(checked) => {
-                        toast.success(
-                            `Player registration ${checked ? "enabled" : "disabled"}`
+                        updateAuction(
+                            {
+                                id: auction.id,
+                                data: { playerRegistration: checked },
+                            },
+                            {
+                                onSuccess: () => {
+                                    toast.success(
+                                        `Player registration ${
+                                            checked ? "enabled" : "disabled"
+                                        }`
+                                    );
+                                },
+                                onError: () => {
+                                    toast.error(
+                                        "Something went wrong. Please try again."
+                                    );
+                                },
+                            }
                         );
                     }}
                 />
+            </div>
+
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                    <Heading size="h5" className={"font-semibold"}>
+                        Player Registeration Link
+                    </Heading>
+                    <Heading size="p" className="text-muted-foreground">
+                        Share this link with players to allow them to join the
+                        auction.
+                    </Heading>
+                </div>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        const fullLink = `${window.location.origin}/player/${auction.id}`;
+                        navigator.clipboard.writeText(fullLink);
+                        toast.success("Link copied to clipboard");
+                    }}
+                >
+                    Copy Link
+                </Button>
             </div>
         </div>
     );

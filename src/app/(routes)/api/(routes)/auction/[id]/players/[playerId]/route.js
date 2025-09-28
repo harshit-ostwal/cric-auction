@@ -14,20 +14,20 @@ export async function GET(req, { params }) {
             );
         }
 
-        const { id: auctionId, teamId } = await params;
+        const { id: auctionId, playerId } = await params;
 
-        const team = await prisma.team.findFirst({
+        const player = await prisma.player.findFirst({
             where: {
-                id: teamId,
+                id: playerId,
                 auctionId: auctionId,
             },
         });
 
-        if (!team) {
+        if (!player) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Team not found",
+                    message: "Player not found",
                 },
                 { status: 404 }
             );
@@ -35,9 +35,9 @@ export async function GET(req, { params }) {
 
         return NextResponse.json(
             {
-                data: team,
+                data: player,
                 success: true,
-                message: "Team fetched successfully",
+                message: "Player fetched successfully",
             },
             { status: 200 }
         );
@@ -63,11 +63,11 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        const { id: auctionId, teamId } = await params;
+        const { id: auctionId, playerId } = await params;
 
-        const team = await prisma.team.findFirst({
+        const player = await prisma.player.findFirst({
             where: {
-                id: teamId,
+                id: playerId,
                 auctionId: auctionId,
             },
             include: {
@@ -75,34 +75,34 @@ export async function DELETE(req, { params }) {
             },
         });
 
-        if (!team) {
+        if (!player) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Team not found",
+                    message: "Player not found",
                 },
                 { status: 404 }
             );
         }
 
-        if (team.auction.userId !== session.user.id) {
+        if (player.auction.userId !== session.user.id) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Unauthorized to delete this team",
+                    message: "Unauthorized to delete this player",
                 },
                 { status: 403 }
             );
         }
 
-        await prisma.team.delete({
+        await prisma.player.delete({
             where: {
-                id: teamId,
+                id: playerId,
             },
         });
 
         return NextResponse.json(
-            { success: true, message: "Team deleted successfully" },
+            { success: true, message: "Player deleted successfully" },
             { status: 200 }
         );
     } catch (error) {
@@ -127,12 +127,12 @@ export async function PATCH(req, { params }) {
             );
         }
 
-        const { id: auctionId, teamId } = await params;
+        const { id: auctionId, playerId } = await params;
         const body = await req.json();
 
-        const team = await prisma.team.findFirst({
+        const player = await prisma.player.findFirst({
             where: {
-                id: teamId,
+                id: playerId,
                 auctionId: auctionId,
             },
             include: {
@@ -140,29 +140,29 @@ export async function PATCH(req, { params }) {
             },
         });
 
-        if (!team) {
+        if (!player) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Team not found",
+                    message: "Player not found",
                 },
                 { status: 404 }
             );
         }
 
-        if (team.auction.userId !== session.user.id) {
+        if (player.auction.userId !== session.user.id) {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "Unauthorized to update this team",
+                    message: "Unauthorized to update this player",
                 },
                 { status: 403 }
             );
         }
 
-        const updatedTeam = await prisma.team.update({
+        const updatedPlayer = await prisma.player.update({
             where: {
-                id: teamId,
+                id: playerId,
             },
             data: {
                 ...body,
@@ -171,9 +171,9 @@ export async function PATCH(req, { params }) {
 
         return NextResponse.json(
             {
-                data: updatedTeam,
+                data: updatedPlayer,
                 success: true,
-                message: "Team updated successfully",
+                message: "Player updated successfully",
             },
             { status: 200 }
         );

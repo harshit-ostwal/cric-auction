@@ -126,7 +126,9 @@ export async function PATCH(req, { params }) {
 
         const updatedAuction = await prisma.auction.update({
             where: { id },
-            data: body,
+            data: {
+                ...body,
+            },
         });
 
         return NextResponse.json(

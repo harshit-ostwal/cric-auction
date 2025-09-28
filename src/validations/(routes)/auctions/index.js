@@ -58,3 +58,11 @@ export const teamSchema = z.object({
         .max(50, { error: "Team name must be at most 50 characters" })
         .trim(),
 });
+
+export const playerSchema = z.object({
+    playerName: z
+        .string({ error: "Player name is required" })
+        .min(2, { error: "Player name must be at least 2 characters" })
+        .max(50, { error: "Player name must be at most 50 characters" })
+        .trim(),
+});
