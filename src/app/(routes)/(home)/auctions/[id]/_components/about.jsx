@@ -89,6 +89,7 @@ function About({ auction,isOwner }) {
                 </CardContent>
             </Card>
 
+{isOwner && (
             <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                     <Heading size="h5" className={"font-semibold"}>
@@ -124,9 +125,10 @@ function About({ auction,isOwner }) {
                     }}
                 />
             </div>
+            )}
 
             <div className="flex items-center justify-between">
-              {isOwner && (  <div className="flex flex-col">
+             <div className="flex flex-col">
                     <Heading size="h5" className={"font-semibold"}>
                         Player Registeration Link
                     </Heading>
@@ -134,7 +136,7 @@ function About({ auction,isOwner }) {
                         Share this link with players to allow them to join the
                         auction.
                     </Heading>
-                </div>)}
+                </div>
                 <Button
                     variant="outline"
                     onClick={() => {
