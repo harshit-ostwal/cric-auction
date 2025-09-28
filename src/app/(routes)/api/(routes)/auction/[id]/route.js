@@ -9,6 +9,11 @@ export async function GET(req, { params }) {
 
         const auction = await prisma.auction.findUnique({
             where: { id },
+            include: {
+                teams: true,
+                players: true,
+                bidders: true,
+            },
         });
 
         if (!auction) {

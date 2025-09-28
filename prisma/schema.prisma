@@ -49,14 +49,14 @@ model Auction {
 }
 
 model Team {
-  id               String  @id @default(auto()) @map("_id") @db.ObjectId
-  teamLogo         String?
-  teamLogoPublicId String?
-  teamName         String
-  teamPoints       Int?
-  teamUsedPoints   Int?
-  maxBid           Int?
-  numberOfPlayers  Int?
+  id                  String  @id @default(auto()) @map("_id") @db.ObjectId
+  teamLogo            String?
+  teamLogoPublicId    String?
+  teamName            String
+  teamPoints          Int?
+  teamUsedPoints      Int?
+  teamMaxBid          Int?
+  teamNumberOfPlayers Int?
 
   players Player[]
   bidders Bidder[]

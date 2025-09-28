@@ -120,7 +120,10 @@ const AuctionCard = memo(({ auction, currentUser }) => {
 
     return (
         <div className="flex w-full flex-col gap-4">
-            <Card className={"bg-radial from-white via-white to-amber-50"}>
+            <Card
+                onClick={() => router.replace(`/auctions/${auction.id}`)}
+                className={"bg-radial from-white via-white to-amber-50"}
+            >
                 <CardHeader className="flex flex-col gap-4">
                     <div className="flex w-full items-center justify-between gap-4 font-semibold">
                         <Heading size="p">
@@ -137,12 +140,7 @@ const AuctionCard = memo(({ auction, currentUser }) => {
                         </Heading>
                     </div>
 
-                    <div
-                        className="flex w-fit cursor-pointer items-center gap-4"
-                        onClick={() =>
-                            router.replace(`/auctions/${auction.id}`)
-                        }
-                    >
+                    <div className="flex w-fit cursor-pointer items-center gap-4">
                         <Avatar
                             className={
                                 "size-16 rounded-2xl object-cover lg:size-24"

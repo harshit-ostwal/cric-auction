@@ -57,20 +57,4 @@ export const teamSchema = z.object({
         .min(2, { error: "Team name must be at least 2 characters" })
         .max(50, { error: "Team name must be at most 50 characters" })
         .trim(),
-    teamPoints: z.coerce
-        .number({ error: "Team points is required" })
-        .min(0, { error: "Team points must be a positive number" })
-        .max(10000000, { error: "Team points cannot exceed 10,000,000" }),
-    teamUsedPoints: z.coerce
-        .number({ error: "Used points is required" })
-        .min(0, { error: "Used points must be a positive number" })
-        .max(10000000, { error: "Used points cannot exceed 10,000,000" }),
-    maxBid: z.coerce
-        .number({ error: "Max bid is required" })
-        .min(100, { error: "Max bid must be at least 100" })
-        .max(10000000, { error: "Max bid cannot exceed 10,000,000" }),
-    numberOfPlayers: z.coerce
-        .number({ error: "Number of players is required" })
-        .min(1, { error: "There must be at least 1 player" })
-        .max(25, { error: "Number of players cannot exceed 25" }),
 });

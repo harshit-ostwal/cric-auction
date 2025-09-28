@@ -71,10 +71,7 @@ function DialogHeader({ className, ...props }) {
     return (
         <div
             data-slot="dialog-header"
-            className={cn(
-                "flex flex-col gap-2 text-center sm:text-left",
-                className
-            )}
+            className={cn("flex flex-col gap-2 text-left", className)}
             {...props}
         />
     );
@@ -107,7 +104,7 @@ function DialogDescription({ className, ...props }) {
     return (
         <DialogPrimitive.Description
             data-slot="dialog-description"
-            className={cn("text-muted-foreground text-sm", className)}
+            className={cn("text-muted-foreground", className)}
             {...props}
         />
     );

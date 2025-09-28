@@ -5,12 +5,13 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar";
 
 import { cn } from "@/lib/utils";
 
-function Avatar({ className, ...props }) {
+function Avatar({ className, rounded = true, ...props }) {
     return (
         <AvatarPrimitive.Root
             data-slot="avatar"
             className={cn(
-                "relative flex size-10 shrink-0 overflow-hidden rounded-full lg:size-12",
+                "relative flex size-12 shrink-0 overflow-hidden",
+                rounded ? "rounded-full" : "rounded-md",
                 className
             )}
             {...props}

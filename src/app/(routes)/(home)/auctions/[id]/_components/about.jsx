@@ -36,19 +36,19 @@ function About({ auction }) {
             },
             {
                 id: "points",
-                icon: Icons.coins || Icons.gavel,
+                icon: Icons.coins,
                 label: "Team Points",
                 value: auction?.teamPoints?.toLocaleString() || 0,
             },
             {
                 id: "minBid",
-                icon: Icons.dollarSign || Icons.gavel,
+                icon: Icons.coins,
                 label: "Minimum Bid",
                 value: auction?.minimumBid?.toLocaleString() || 0,
             },
             {
                 id: "bidIncrease",
-                icon: Icons.trendingUp || Icons.arrowUp,
+                icon: Icons.trendUp,
                 label: "Bid Increase",
                 value: auction?.bidIncreaseBy?.toLocaleString() || 0,
             },
@@ -56,13 +56,13 @@ function About({ auction }) {
                 id: "teams",
                 icon: Icons.userGroup,
                 label: "Teams",
-                value: `${auction?.teams || 0} ${(auction?.teams || 0) === 1 ? "Team" : "Teams"}`,
+                value: `${auction?.teams.length || 0} ${(auction?.teams.length || 0) === 1 ? "Team" : "Teams"}`,
             },
             {
                 id: "players",
                 icon: Icons.users,
                 label: "Players",
-                value: `${auction?.players || 0} ${(auction?.players || 0) === 1 ? "Player" : "Players"}`,
+                value: `${auction?.players.length || 0} ${(auction?.players.length || 0) === 1 ? "Player" : "Players"}`,
             },
         ],
         [auction]
@@ -72,7 +72,7 @@ function About({ auction }) {
         <div className="flex flex-col gap-10">
             <Card>
                 <CardContent>
-                    <div className="grid grid-cols-2 gap-6 lg:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
                         {auctionStats.map((stat) => (
                             <StatCard
                                 key={stat.id}

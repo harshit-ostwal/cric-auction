@@ -80,7 +80,7 @@ function Page() {
                     onSubmit={auctionForm.handleSubmit(onSubmit)}
                     className="flex flex-col gap-8"
                 >
-                    <CldUploadWidget
+                    {/* <CldUploadWidget
                         uploadPreset="cric-auction"
                         options={{
                             maxFiles: 1,
@@ -146,7 +146,7 @@ function Page() {
                                 </div>
                             );
                         }}
-                    </CldUploadWidget>
+                    </CldUploadWidget> */}
 
                     <div className="grid items-start gap-6 md:grid-cols-2">
                         <FormField

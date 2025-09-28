@@ -10,9 +10,12 @@ import { useParams } from "next/navigation";
 import React from "react";
 import Teams from "./_components/teams";
 import About from "./_components/about";
+import Players from "./_components/players";
+import { useSession } from "next-auth/react";
 
 function Page() {
     const { id } = useParams();
+    const { data: session } = useSession();
 
     const { data: auctionResponse } = useGetAuctionById(id);
 
@@ -47,6 +50,8 @@ function Page() {
         }
     };
 
+    const isOwner = session?.user && auction?.userId === session?.user?.id;
+
     return (
         <div className="flex flex-col gap-6">
             {auction && (
@@ -56,9 +61,10 @@ function Page() {
                             <Avatar className="border-primary size-24 border-4 lg:size-32">
                                 <AvatarImage
                                     src={
+                                        auction.auctionImage ??
                                         "https://res.cloudinary.com/harshitjain/image/upload/v1758842491/evqlhcs8svxch3iygray.webp"
                                     }
-                                    alt={auction.auctionName}
+                                    alt={auction.auctionImagePublicId}
                                 />
                             </Avatar>
                             <div className="flex flex-col gap-1">
@@ -111,9 +117,11 @@ function Page() {
                             <TabsTrigger value="about">About</TabsTrigger>
                         </TabsList>
                         <TabsContent value="teams">
-                            <Teams auction={auction} />
+                            <Teams isOwner={isOwner} auction={auction} />
                         </TabsContent>
-                        <TabsContent value="players">Players</TabsContent>
+                        <TabsContent value="players">
+                            <Players isOwner={isOwner} auction={auction} />
+                        </TabsContent>
                         <TabsContent value="mvp">MVP</TabsContent>
                         <TabsContent value="about">
                             <About auction={auction} />

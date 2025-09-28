@@ -34,7 +34,7 @@ export const authOptions = {
                         where: { email: profile.email },
                         update: {
                             fullName: profile.name,
-                            ...(!existingUser?.image && {
+                            ...(!existingUser?.imagePublicId && {
                                 image: profile.picture,
                                 imagePublicId: null,
                             }),

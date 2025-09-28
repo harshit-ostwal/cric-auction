@@ -49,7 +49,7 @@ function Page() {
                     className="w-full"
                     onClick={() => {
                         setLoading(true);
-                        signIn("google");
+                        signIn("google", { redirect: true, callbackUrl: "/" });
                     }}
                 >
                     <Icons.loginGoogle />

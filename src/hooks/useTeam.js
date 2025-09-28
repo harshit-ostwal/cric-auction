@@ -1,7 +1,6 @@
 "use client";
 import axiosClient from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useTeams = (id) => {
@@ -14,9 +13,25 @@ export const useTeams = (id) => {
     });
 };
 
+export const useDeleteTeam = (auctionId) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (teamId) => {
+            const res = await axiosClient.delete(
+                `/auction/${auctionId}/teams/${teamId}`
+            );
+            return res.data;
+        },
+        onSuccess: () => {
+            toast.success("Team deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ["teams"] });
+            queryClient.invalidateQueries({ queryKey: ["auction"] });
+        },
+    });
+};
+
 export const useCreateTeam = () => {
     const queryClient = useQueryClient();
-    const router = useRouter();
 
     return useMutation({
         mutationFn: async (data) => {
@@ -28,8 +43,8 @@ export const useCreateTeam = () => {
         },
         onSuccess: () => {
             toast.success("Team added successfully");
+            queryClient.invalidateQueries({ queryKey: ["auction"] });
             queryClient.invalidateQueries({ queryKey: ["teams"] });
-            router.refresh();
         },
         onError: () => {
             toast.error("Something went wrong");

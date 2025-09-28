@@ -139,6 +139,7 @@ import {
     IconHammer,
     IconTicket,
     IconCricket,
+    IconCoins,
 } from "@tabler/icons-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaLinkedinIn } from "react-icons/fa";
@@ -154,6 +155,7 @@ export const Icons = {
     targetArrow: IconTargetArrow,
     flag: IconFlag,
     bookOpen: IconBook,
+    coins: IconCoins,
     om: IconOm,
     gavel: IconGavel,
     people: IconUsers,
