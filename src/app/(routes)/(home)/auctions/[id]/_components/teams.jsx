@@ -72,14 +72,20 @@ function Teams({ isOwner, auction }) {
         <div className="flex flex-col gap-4">
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <Button
-                        isLoading={loading || teamForm.formState.isSubmitting}
-                        disabled={!isOwner || teamForm.formState.isSubmitting}
-                        className={"ml-auto"}
-                        variant={"cricketBlue"}
-                    >
-                        <Icons.plus /> Add Team
-                    </Button>
+                    {isOwner && (
+                        <Button
+                            isLoading={
+                                loading || teamForm.formState.isSubmitting
+                            }
+                            disabled={
+                                !isOwner || teamForm.formState.isSubmitting
+                            }
+                            className={"ml-auto"}
+                            variant={"cricketBlue"}
+                        >
+                            <Icons.plus /> Add Team
+                        </Button>
+                    )}
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
