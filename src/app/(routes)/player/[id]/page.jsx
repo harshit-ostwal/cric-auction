@@ -63,7 +63,7 @@ function Page() {
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center">
-            <div className="flex w-11/12 sm:max-w-md flex-col gap-4">
+            <div className="flex w-11/12 flex-col gap-4 sm:max-w-md">
                 <Link href={"/"}>
                     <Heading
                         size="h4"

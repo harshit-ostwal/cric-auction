@@ -27,6 +27,10 @@ export async function GET(req, { params }) {
             where: {
                 auctionId: id,
             },
+            include: {
+                players: true,
+                bidders: true,
+            },
             orderBy: { createdAt: "desc" },
         });
 
@@ -79,6 +83,10 @@ export async function POST(req) {
             data: {
                 ...body,
                 auctionId: body.auctionId,
+            },
+            include: {
+                players: true,
+                bidders: true,
             },
         });
 

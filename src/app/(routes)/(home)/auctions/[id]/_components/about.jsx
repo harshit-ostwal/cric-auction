@@ -25,7 +25,7 @@ const StatCard = React.memo(({ icon: Icon, label, value }) => (
 
 StatCard.displayName = "StatCard";
 
-function About({ auction,isOwner }) {
+function About({ auction, isOwner }) {
     const { mutate: updateAuction } = useUpdateAuction();
 
     const auctionStats = React.useMemo(
@@ -89,46 +89,47 @@ function About({ auction,isOwner }) {
                 </CardContent>
             </Card>
 
-{isOwner && (
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                    <Heading size="h5" className={"font-semibold"}>
-                        Player Registeration
-                    </Heading>
-                    <Heading size="p" className="text-muted-foreground">
-                        Allow players to register themselves for this auction
-                    </Heading>
+            {isOwner && (
+                <div className="flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <Heading size="h5" className={"font-semibold"}>
+                            Player Registeration
+                        </Heading>
+                        <Heading size="p" className="text-muted-foreground">
+                            Allow players to register themselves for this
+                            auction
+                        </Heading>
+                    </div>
+                    <Switch
+                        checked={auction?.playerRegistration}
+                        onCheckedChange={(checked) => {
+                            updateAuction(
+                                {
+                                    id: auction.id,
+                                    data: { playerRegistration: checked },
+                                },
+                                {
+                                    onSuccess: () => {
+                                        toast.success(
+                                            `Player registration ${
+                                                checked ? "enabled" : "disabled"
+                                            }`
+                                        );
+                                    },
+                                    onError: () => {
+                                        toast.error(
+                                            "Something went wrong. Please try again."
+                                        );
+                                    },
+                                }
+                            );
+                        }}
+                    />
                 </div>
-                <Switch
-                    checked={auction?.playerRegistration}
-                    onCheckedChange={(checked) => {
-                        updateAuction(
-                            {
-                                id: auction.id,
-                                data: { playerRegistration: checked },
-                            },
-                            {
-                                onSuccess: () => {
-                                    toast.success(
-                                        `Player registration ${
-                                            checked ? "enabled" : "disabled"
-                                        }`
-                                    );
-                                },
-                                onError: () => {
-                                    toast.error(
-                                        "Something went wrong. Please try again."
-                                    );
-                                },
-                            }
-                        );
-                    }}
-                />
-            </div>
             )}
 
             <div className="flex items-center justify-between">
-             <div className="flex flex-col">
+                <div className="flex flex-col">
                     <Heading size="h5" className={"font-semibold"}>
                         Player Registeration Link
                     </Heading>

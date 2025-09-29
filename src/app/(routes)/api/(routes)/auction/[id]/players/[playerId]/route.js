@@ -5,8 +5,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
     try {
-        const session = await getServerSession(authOptions);
-
         const { id: auctionId, playerId } = await params;
 
         const player = await prisma.player.findFirst({
@@ -88,11 +86,30 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        await prisma.player.delete({
-            where: {
-                id: playerId,
-            },
-        });
+        await prisma.$transaction([
+            prisma.team.updateMany({
+                where: {
+                    id: teamId,
+                },
+                data: {
+                    teamUsedPoints: {
+                        decrement: player.soldValue || 0,
+                    },
+                    teamNumberOfPlayers: {
+                        decrement: 1,
+                    },
+                },
+            }),
+            prisma.player.updateMany({
+                where: {
+                    teamId,
+                },
+                data: {
+                    soldValue: null,
+                    soldUnsoldAt: null,
+                },
+            }),
+        ]);
 
         return NextResponse.json(
             { success: true, message: "Player deleted successfully" },

@@ -14,7 +14,13 @@ export async function GET() {
             );
         }
 
-        const auctions = await prisma.auction.findMany();
+        const auctions = await prisma.auction.findMany({
+            include: {
+                teams: true,
+                players: true,
+                bidders: true,
+            },
+        });
 
         return NextResponse.json(
             {

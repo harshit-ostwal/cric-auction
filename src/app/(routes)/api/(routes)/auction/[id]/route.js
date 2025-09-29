@@ -10,7 +10,12 @@ export async function GET(req, { params }) {
         const auction = await prisma.auction.findUnique({
             where: { id },
             include: {
-                teams: true,
+                teams: {
+                    include: {
+                        players: true,
+                        bidders: true,
+                    },
+                },
                 players: true,
                 bidders: true,
             },
@@ -73,9 +78,12 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        await prisma.auction.delete({
-            where: { id },
-        });
+        await prisma.$transaction([
+            prisma.team.deleteMany({ where: { auctionId: id } }),
+            prisma.player.deleteMany({ where: { auctionId: id } }),
+            prisma.bidder.deleteMany({ where: { auctionId: id } }),
+            prisma.auction.delete({ where: { id } }),
+        ]);
 
         return NextResponse.json(
             { success: true, message: "Auction deleted successfully" },

@@ -12,6 +12,7 @@ import Teams from "./_components/teams";
 import About from "./_components/about";
 import Players from "./_components/players";
 import { useSession } from "next-auth/react";
+import MVP from "./_components/mvp";
 
 function Page() {
     const { id } = useParams();
@@ -122,7 +123,9 @@ function Page() {
                         <TabsContent value="players">
                             <Players isOwner={isOwner} auction={auction} />
                         </TabsContent>
-                        <TabsContent value="mvp">MVP</TabsContent>
+                        <TabsContent value="mvp">
+                            <MVP isOwner={isOwner} auction={auction} />
+                        </TabsContent>
                         <TabsContent value="about">
                             <About isOwner={isOwner} auction={auction} />
                         </TabsContent>

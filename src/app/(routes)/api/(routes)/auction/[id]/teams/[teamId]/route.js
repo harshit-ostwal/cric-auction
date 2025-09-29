@@ -21,6 +21,15 @@ export async function GET(req, { params }) {
                 id: teamId,
                 auctionId: auctionId,
             },
+            include: {
+                players: true,
+                bidders: true,
+                auction: {
+                    select: {
+                        auctionName: true,
+                    },
+                },
+            },
         });
 
         if (!team) {
@@ -95,11 +104,19 @@ export async function DELETE(req, { params }) {
             );
         }
 
-        await prisma.team.delete({
-            where: {
-                id: teamId,
-            },
-        });
+        await prisma.$transaction([
+            prisma.player.updateMany({
+                where: {
+                    teamId,
+                },
+                data: {
+                    soldValue: null,
+                    soldUnsoldAt: null,
+                },
+            }),
+            prisma.bidder.deleteMany({ where: { teamId } }),
+            prisma.team.deleteMany({ where: { id: teamId } }),
+        ]);
 
         return NextResponse.json(
             { success: true, message: "Team deleted successfully" },

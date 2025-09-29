@@ -20,7 +20,7 @@ export const useTeamById = (auctionId, teamId) => {
             const res = await axiosClient.get(
                 `/auction/${auctionId}/teams/${teamId}`
             );
-            return res.data;
+            return res.data.data;
         },
         enabled: !!auctionId && !!teamId,
     });

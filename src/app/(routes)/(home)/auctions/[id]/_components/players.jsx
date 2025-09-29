@@ -88,11 +88,13 @@ function Players({ isOwner, auction }) {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
-              {isOwner && (  <Link href={`/player/${auction.id}`}>
-                    <Button className={"h-12"} variant={"cricketRed"}>
-                        <Icons.plus /> Add Players
-                    </Button>
-                </Link>)}
+                {isOwner && (
+                    <Link href={`/player/${auction.id}`}>
+                        <Button className={"h-12"} variant={"cricketRed"}>
+                            <Icons.plus /> Add Players
+                        </Button>
+                    </Link>
+                )}
             </div>
 
             {filteredPlayers.length === 0 ? (

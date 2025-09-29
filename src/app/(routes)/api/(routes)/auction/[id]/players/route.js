@@ -48,14 +48,11 @@ export async function GET(req, { params }) {
 
 export async function POST(req) {
     try {
-        const session = await getServerSession(authOptions);
-
         const body = await req.json();
 
         const auction = await prisma.auction.findFirst({
             where: {
                 id: body.auctionId,
-                userId: session.user.id,
             },
         });
 
@@ -71,6 +68,7 @@ export async function POST(req) {
         const player = await prisma.player.create({
             data: {
                 ...body,
+                auctionId: body.auctionId,
             },
         });
 
