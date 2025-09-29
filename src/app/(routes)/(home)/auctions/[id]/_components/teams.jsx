@@ -526,7 +526,7 @@ function Teams({ isOwner, auction }) {
                                         </div>
 
                                         <ScrollArea>
-                                            <div className="grid grid-cols-1 gap-4">
+                                            <div className="grid grid-cols-1 gap-4 pt-10">
                                                 {team.players &&
                                                 team.players.length > 0 ? (
                                                     team.players.map(
@@ -536,46 +536,40 @@ function Teams({ isOwner, auction }) {
                                                                 className="flex flex-col gap-4"
                                                             >
                                                                 <div className="relative flex flex-1 items-center gap-4">
-                                                                    <Avatar className="size-14 bg-lime-100 p-2">
-                                                                        <AvatarImage
-                                                                            src={
-                                                                                "https://res.cloudinary.com/harshitjain/image/upload/v1759033653/kfgvxrisso7uai4hursr.png"
-                                                                            }
-                                                                            alt={
-                                                                                player.playerName ??
-                                                                                "Unknown Player"
-                                                                            }
-                                                                        />
-                                                                    </Avatar>
-                                                                    <div className="flex flex-1 flex-col">
-                                                                        <Heading
-                                                                            size="p"
-                                                                            className={
-                                                                                "text-muted-foreground"
-                                                                            }
-                                                                        >
-                                                                            {player.playerName ??
-                                                                                "Unknown Player"}
-                                                                        </Heading>
+                                                                    <Heading size="h6">
+                                                                        {idx +
+                                                                            1}
+                                                                        .
+                                                                    </Heading>
+                                                                    <Heading
+                                                                        size="h6"
+                                                                        className={
+                                                                            "flex-1 font-medium"
+                                                                        }
+                                                                    >
+                                                                        {player.playerName ??
+                                                                            "Unknown Player"}
+                                                                    </Heading>
+                                                                    <div className="flex gap-4">
+                                                                        {topMVPPlayers.includes(
+                                                                            player.id
+                                                                        ) && (
+                                                                            <Badge variant="success">
+                                                                                MVP
+                                                                            </Badge>
+                                                                        )}
                                                                         <Heading
                                                                             size="h6"
                                                                             className={
                                                                                 "font-semibold"
                                                                             }
                                                                         >
-                                                                            ₹
+                                                                            <Icons.coins color="gold" />
                                                                             {formatCurrency(
-                                                                                10000
+                                                                                player.soldValue
                                                                             )}
                                                                         </Heading>
                                                                     </div>
-                                                                    {topMVPPlayers.includes(
-                                                                        player.id
-                                                                    ) && (
-                                                                        <Badge variant="success">
-                                                                            MVP
-                                                                        </Badge>
-                                                                    )}
                                                                 </div>
                                                                 <Separator />
                                                             </div>

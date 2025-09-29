@@ -57,7 +57,7 @@ function Page() {
         <div className="flex flex-col gap-6">
             {auction && (
                 <>
-                    <Card className="flex border-none bg-amber-50">
+                    <Card className="flex border">
                         <CardContent className={"flex items-center gap-4"}>
                             <Avatar className="border-primary size-24 border-4 lg:size-32">
                                 <AvatarImage
@@ -69,7 +69,7 @@ function Page() {
                                 />
                             </Avatar>
                             <div className="flex flex-col gap-1">
-                                <Heading size={"h5"} className="font-bold">
+                                <Heading size={"h4"} className="font-bold">
                                     {auction.auctionName}
                                 </Heading>
 
@@ -124,7 +124,7 @@ function Page() {
                             <Players isOwner={isOwner} auction={auction} />
                         </TabsContent>
                         <TabsContent value="mvp">
-                            <MVP isOwner={isOwner} auction={auction} />
+                            <MVP auction={auction} />
                         </TabsContent>
                         <TabsContent value="about">
                             <About isOwner={isOwner} auction={auction} />

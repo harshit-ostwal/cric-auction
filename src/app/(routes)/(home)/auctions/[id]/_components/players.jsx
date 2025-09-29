@@ -102,12 +102,13 @@ function Players({ isOwner, auction }) {
                     No players found
                 </Heading>
             ) : (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {filteredPlayers.map((player) => (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                    {filteredPlayers.map((player, idx) => (
                         <div
-                            key={player.id}
+                            key={idx}
                             className="flex items-center gap-4 rounded-md border p-3"
                         >
+                            <Heading size="h6">{idx + 1}.</Heading>
                             <div className="flex flex-1 items-center gap-4">
                                 <Avatar className="size-14 bg-lime-100 p-2">
                                     <AvatarImage
@@ -117,7 +118,12 @@ function Players({ isOwner, auction }) {
                                         alt={player.playerName}
                                     />
                                 </Avatar>
-                                <Heading size="h6" className={"font-semibold"}>
+                                <Heading
+                                    size="h6"
+                                    className={
+                                        "line-clamp-1 font-semibold text-nowrap"
+                                    }
+                                >
                                     {player.playerName}
                                 </Heading>
                             </div>
